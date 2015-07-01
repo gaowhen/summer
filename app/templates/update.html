@@ -1,0 +1,51 @@
+<%inherit file="/base.html" />
+
+<%def name="content()">
+<div class="editor-mod">
+	<div class="editor-hd">
+		<h2><input type="text" class="title" value="${post_title}"/></h2>
+		<input type="hidden" value="${slug}" class="post-slug"/>
+	</div>
+
+	<div class="editor-bd">
+		<div class="features">
+			<div class="editor">
+				<div class="outer">
+					<div class="editorwrap">
+						<div class="entry-markdown">
+							<header>
+								markdown
+							</header>
+							<div class="entry-markdown-content">
+								<textarea class="post-content" name="" id="" cols="30" rows="10">${post_content}</textarea>
+							</div>
+						</div>
+
+						<div class="entry-preview active">
+							<header>
+								preview
+							</header>
+							<div class="entry-preview-content">
+								<div class="rendered-markdown"></div>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<div class="editor-ft">
+		<a href="#" class="btn-publish">publish</a>
+	</div>
+</div>
+</%def>
+
+<%def name="css()">
+<link rel="stylesheet" href="/static/src/css/ghostdown.css"/>
+<link rel="stylesheet" href="/static/src/css/dropzone.css"/>
+</%def>
+
+<%def name="js()">
+<script src="/static/js/update.js"></script>
+</%def>
