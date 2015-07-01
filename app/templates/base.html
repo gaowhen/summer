@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta content="charset=utf-8">
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="Cache-Control" content="no-siteapp" />
+    <meta name="viewport" content="width=device-width, maximum-scale=1.0" />
+    <meta content="" name="description"/>
+    <meta content="" name="keywords"/>
+    <link rel="shortcut icon" href="{{{img/favicon.ico}}}" type="image/x-icon">
+    ${self.more_meta()}
+    <title>${self.title()}</title>
+    <!--[if lte IE 8]>
+    <style>
+      .mobile-element { display: none !important; }
+    </style>
+    <![endif]-->
+    ${self.css()}
+    <!-- COLLECTED CSS -->
+  </head>
+  <body>
+    ${self.content()}
+    <script src="/static/js/base.js"></script>
+    ${self.js()}
+  </body>
+</html>
+
+<%def name="content()">
+  <div class="content-wrapper clearfix">
+    ${self.pagetitle()}
+    <div class="main">
+      ${self.main()}
+    </div>
+    <div class="side">
+      ${self.side()}
+    </div>
+  </div>
+</%def>
+
+<%def name="header()">
+</%def>
+
+<%def name="footer()">
+</%def>
+
+<%def name="title()">Summer Blog</%def>
+<%def name="more_meta()"></%def>
+<%def name="css()"></%def>
+<%def name="js()"></%def>
+
+<%def name="pagetitle()"></%def>
+<%def name="main()"></%def>
+<%def name="side()"></%def>

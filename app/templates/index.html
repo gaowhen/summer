@@ -1,0 +1,16 @@
+<%inherit file="/base.html" />
+
+<%def name="content()">
+	% for entry in entries:
+		<div class="entry">
+			<div class="entry-hd">
+				<h3><a href="/post/${entry['slug']}">${entry['title']}</a></h3>
+				<a href="/post/${entry['slug']}/edit" class="btn-edit">edit</a>
+				<a href="/post/${entry['slug']}/del" class="btn-del">del</a>
+			</div>
+			<div class="entry-bd">
+				${entry['content']}
+			</div>
+		</div>
+	% endfor
+</%def>
