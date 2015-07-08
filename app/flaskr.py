@@ -40,6 +40,7 @@ def fill_db():
 	for name in files:
 		try:
 			with open(name) as f:
+				print name
 				_file = f.read().decode('utf-8')
 				meta = _file.split('---')[0]
 				content = _file.split('---')[1]
@@ -75,11 +76,11 @@ def teardown_request(exception):
 @app.route('/upload', methods=['POST', ])
 def upload():
 	if request.method == 'POST':
-		file = request.files['file']
+		_file = request.files['file']
 
-		if file:
-			filename = secure_filename(file.filename)
-			file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
+		if _file:
+			filename = secure_filename(_file.filename)
+			_file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
 			return jsonify(r=True, path='/static/src/img/' + filename)
 
 		return jsonify(r=False)
