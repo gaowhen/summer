@@ -9,6 +9,8 @@ categories:
 1.Internet Explorer---IE Developer Toolbar Beta 3
 [IE Developer Toolbar Beta 3](http://www.microsoft.com/downloads/details.aspx?FamilyID=e59c3964-672d-4511-bb3e-2d5e1db91038&displaylang=en)
 
+<!--more-->
+
 ![](/images/)
 
 2.Opera---Web Developer Toolbar for Opera

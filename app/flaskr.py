@@ -94,8 +94,14 @@ def upload():
 
 @app.route('/')
 def show_entries():
-	cur = g.db.execute('select title, slug, content from entries order by create_time desc limit 5')
-	entries = [dict(title=row['title'], slug=row['slug'], content=markdown(row['content'])) for row in cur.fetchall()]
+	cur = g.db.execute('select title, id, content from entries order by create_time desc limit 5')
+	entries = []
+
+	for row in cur.fetchall():
+		_content = row['content'].split('<!--more-->')[0]
+		content = markdown(_content)
+		entry = dict(title=row['title'], id=row['id'], content=content)
+		entries.append(entry)
 
 	return render_template('index.html', **locals())
 
@@ -137,9 +143,9 @@ def add_entry():
 	return render_template('add.html', **locals())
 
 
-@app.route('/post/<string:name>')
-def show_entry(name):
-	cur = g.db.execute('select title, content from entries where slug=?', (name,))
+@app.route('/posts/<int:id>')
+def show_entry(id):
+	cur = g.db.execute('select title, content from entries where id=?', (id,))
 	_entry = cur.fetchone()
 	post_title = _entry['title']
 	post_content = markdown(_entry['content'])
@@ -147,35 +153,40 @@ def show_entry(name):
 	return render_template('entry.html', **locals())
 
 
-@app.route('/post/<string:name>/edit')
-def edit_entry(name):
-	cur = g.db.execute('select title, content from entries where slug=?', (name,))
+@app.route('/posts/<int:id>/edit')
+def edit_entry(id):
+	cur = g.db.execute('select title, content, slug from entries where id=?', (id,))
 	_entry = cur.fetchone()
 	post_title = _entry['title']
 	post_content = _entry['content']
-	slug = name
+	slug = _entry['slug']
+
 	return render_template('edit.html', **locals())
 
 
-@app.route('/post/<string:name>/update', methods=['POST'])
-def update_entry(name):
+@app.route('/post/<int:id>/update', methods=['POST'])
+def update_entry(id):
 	if request.method == 'POST':
+		cur = g.db.execute('select slug, create_time from entries where id=?', (id,))
+		_entry = cur.fetchone()
+		name = _entry['slug']
+		create_time = _entry['create_time']
+
 		title = request.form['title']
 		slug = slugify(title)
 		content = request.form['content']
-		cur = g.db.execute('update entries set title=?, slug=?, content=? where slug=?', (title, slug, content, name))
+		cur = g.db.execute('update entries set title=?, slug=?, content=? where id=?', (title, slug, content, id))
 		g.db.commit()
 
 		# delete old file
 		os.remove(os.path.join(app.config['POST_FOLDER'], name + '.md'))
 
+		# create new file
 		filepath = os.path.join(app.config['POST_FOLDER'], slug + '.md')
 		newfile = open(unicode(filepath, 'utf8'), 'w')
 
 		newfile.write('title: \"' + title.encode('utf8') + '\"\n')
-		# TODO
-		# save date
-		# newfile.write('date: ' + date + '\n')
+		newfile.write('date: ' + create_time + '\n')
 		newfile.write('---' + '\n\n')
 		newfile.write(content.encode('utf8'))
 		newfile.write('\n')
@@ -186,10 +197,14 @@ def update_entry(name):
 	return redirect('/')
 
 
-@app.route('/post/<string:name>/del', methods=['POST'])
-def delete_entry(name):
+@app.route('/posts/<int:id>/del', methods=['POST'])
+def delete_entry(id):
 	if request.method == 'POST':
-		cur = g.db.execute('delete from entries where slug=?', (name,))
+		cur = g.db.execute('select slug from entries where id=?', (id,))
+		_entry = cur.fetchone()
+		name = _entry['slug']
+
+		cur = g.db.execute('delete from entries where id=?', (id,))
 		g.db.commit()
 
 		os.remove(os.path.join(app.config['POST_FOLDER'], name + '.md'))

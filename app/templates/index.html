@@ -1,24 +1,24 @@
 <%inherit file="/base.html" />
 
 <%def name="content()">
-	<div class="tool">
-		<a href="#" class="btn-build">build</a>
-	</div>
+<div class="tool">
+	<a href="#" class="btn-build">build</a>
+</div>
 
-	% for entry in entries:
-		<div class="entry">
-			<div class="entry-hd">
-				<h3><a href="/post/${entry['slug']}">${entry['title']}</a></h3>
-				<a href="/post/${entry['slug']}/edit" class="btn-edit">edit</a>
-				<a href="/post/${entry['slug']}/del" class="btn-del">del</a>
-			</div>
-			<div class="entry-bd">
-				${entry['content']}
-			</div>
-		</div>
-	% endfor
+% for entry in entries:
+<div class="entry">
+	<div class="entry-hd">
+		<h3><a href="/posts/${entry['id']}">${entry['title']}</a></h3>
+		<a href="/posts/${entry['id']}/edit" class="btn-edit">edit</a>
+		<a href="/posts/${entry['id']}/del" data-pid="${entry['id']}" class="btn-del">del</a>
+	</div>
+	<div class="entry-bd">
+		${entry['content']}
+	</div>
+</div>
+% endfor
 </%def>
 
 <%def name="js()">
-	<script src="/static/js/index.js"></script>
+<script src="/static/js/index.js"></script>
 </%def>
