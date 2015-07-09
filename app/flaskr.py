@@ -7,7 +7,6 @@ import os
 import ntpath
 import sqlite3
 
-
 from flask import Flask, request, g, redirect, render_template, jsonify
 from contextlib import closing
 from flask.ext.mako import MakoTemplates, render_template
@@ -17,10 +16,8 @@ from werkzeug import secure_filename
 from mako.template import Template
 from mako.lookup import TemplateLookup
 
-
 app = Flask(__name__)
 app.config.from_pyfile('app.cfg')
-
 
 mako = MakoTemplates(app)
 
@@ -116,19 +113,19 @@ def pagination(page):
 	return render_template('index.html', **locals())
 
 
-@app.route('/add', methods=['GET', 'POST'])
-def add_entry():
+@app.route('/new', methods=['GET', 'POST'])
+def new_draft():
 	if request.method == 'POST':
 		title = request.form['title']
 		slug = slugify(title)
 		content = request.form['content']
 		date = request.form['date']
 
-		g.db.execute('insert into entries (title, content, create_time, slug) values (?, ?, ?, ?)',
+		g.db.execute('insert into entries (title, content, create_time, slug, status) values (?, ?, ?, ?, "draft")',
 								 [title, content, date, slug], )
 		g.db.commit()
 
-		filepath = os.path.join(app.config['POST_FOLDER'], slug + '.md')
+		filepath = os.path.join(app.config['DRAFT_FOLDER'], slug + '.md')
 		newfile = open(unicode(filepath, 'utf8'), 'w')
 
 		newfile.write('title: \"' + title + '\"\n')
@@ -140,7 +137,24 @@ def add_entry():
 
 		return jsonify(r=True)
 
-	return render_template('add.html', **locals())
+	return render_template('new.html', **locals())
+
+
+@app.route('/publish', methods=['POST'])
+def publish_draft():
+    if request.method == 'POST':
+        title = request.form['title']
+        slug = slugify(title)
+
+        cur = g.db.execute('update entries set status=? where slug=?', ("publish", slug))
+        g.db.commit()
+
+        draft_file = os.path.join(app.config['DRAFT_FOLDER'], slug + '.md')
+        publish_file = os.path.join(app.config['POST_FOLDER'], slug + '.md')
+
+        os.rename(draft_file, publish_file)
+
+        return jsonify(r=True)
 
 
 @app.route('/posts/<int:id>')
@@ -234,10 +248,11 @@ def build_pages():
 		cur = g.db.execute('select * from entries')
 		length = len(cur.fetchall())
 
-		for page in range(1, length/5):
+		for page in range(1, length / 5):
 			start = (page - 1) * 5
 
-			cur = g.db.execute('select title, slug, content from entries order by create_time desc limit 5 offset ?', (start,))
+			cur = g.db.execute('select title, slug, content from entries order by create_time desc limit 5 offset ?',
+												 (start,))
 			entries = [dict(title=row['title'], slug=row['slug'], content=markdown(row['content'])) for row in cur.fetchall()]
 
 			lookup = TemplateLookup(directories=['./templates'])
