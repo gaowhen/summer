@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 #  all the imports
-import sqlite3
+import sqlite3, codecs
 from flask import Flask, request, g, redirect, render_template, jsonify
 from contextlib import closing
 from flask.ext.mako import MakoTemplates, render_template
@@ -13,11 +13,11 @@ import ntpath
 from flask.ext.misaka import markdown
 from slugify import slugify
 from werkzeug import secure_filename
+from mako.template import Template
+from mako.lookup import TemplateLookup
 
 app = Flask(__name__)
 app.config.from_pyfile('app.cfg')
-# app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
-# app.config['POST_FOLDER'] = POST_FOLDER
 
 mako = MakoTemplates(app)
 
@@ -192,6 +192,34 @@ def delete_entry(name):
 		return jsonify(r=True)
 
 	return redirect('/')
+
+# TODO
+# generate static files
+def build_index():
+	with closing(connect_db()) as db:
+		cur = db.execute('select title, slug, content from entries order by create_time desc limit 5')
+		entries = [dict(title=row['title'], slug=row['slug'], content=markdown(row['content'])) for row in cur.fetchall()]
+		lookup = TemplateLookup(directories=['./templates'])
+		template = Template(filename='./templates/index.html', lookup=lookup)
+		html_content = template.render(entries=entries)
+
+		dist =  os.path.join(app.config['GHPAGES'], 'index.html')
+
+		with codecs.open(dist, 'w', 'utf-8-sig') as f:
+			f.write(html_content)
+
+@app.route('/build', methods=['POST', 'GET'])
+def build():
+	if request.method == 'POST':
+		# index
+		build_index()
+		# page
+		# post
+		# archive
+
+		return jsonify(r=True)
+
+	return jsonify(r=False)
 
 
 if __name__ == '__main__':

@@ -1,6 +1,10 @@
 <%inherit file="/base.html" />
 
 <%def name="content()">
+	<div class="tool">
+		<a href="#" class="btn-build">build</a>
+	</div>
+
 	% for entry in entries:
 		<div class="entry">
 			<div class="entry-hd">
@@ -13,4 +17,8 @@
 			</div>
 		</div>
 	% endfor
+</%def>
+
+<%def name="js()">
+	<script src="/static/js/index.js"></script>
 </%def>
