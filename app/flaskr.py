@@ -1,23 +1,26 @@
 # -*- coding: utf-8 -*-
 
-#  all the imports
-import sqlite3, codecs
-from flask import Flask, request, g, redirect, render_template, jsonify
-from contextlib import closing
-from flask.ext.mako import MakoTemplates, render_template
+import codecs
 import glob
-import errno
 import yaml
 import os
 import ntpath
+import sqlite3
+
+
+from flask import Flask, request, g, redirect, render_template, jsonify
+from contextlib import closing
+from flask.ext.mako import MakoTemplates, render_template
 from flask.ext.misaka import markdown
 from slugify import slugify
 from werkzeug import secure_filename
 from mako.template import Template
 from mako.lookup import TemplateLookup
 
+
 app = Flask(__name__)
 app.config.from_pyfile('app.cfg')
+
 
 mako = MakoTemplates(app)
 
@@ -32,11 +35,12 @@ def init_db():
 	with closing(connect_db()) as db:
 		with app.open_resource('schema.sql', mode='r') as f:
 			db.cursor().executescript(f.read())
-		db.commit()
+			db.commit()
 
 
 def fill_db():
 	files = glob.glob('./post/*.md')
+
 	for name in files:
 		try:
 			with open(name) as f:
@@ -139,6 +143,7 @@ def show_entry(name):
 	_entry = cur.fetchone()
 	post_title = _entry['title']
 	post_content = markdown(_entry['content'])
+
 	return render_template('entry.html', **locals())
 
 
@@ -193,8 +198,8 @@ def delete_entry(name):
 
 	return redirect('/')
 
-# TODO
-# generate static files
+
+# generate index
 def build_index():
 	with closing(connect_db()) as db:
 		cur = db.execute('select title, slug, content from entries order by create_time desc limit 5')
@@ -203,18 +208,79 @@ def build_index():
 		template = Template(filename='./templates/index.html', lookup=lookup)
 		html_content = template.render(entries=entries)
 
-		dist =  os.path.join(app.config['GHPAGES'], 'index.html')
+		dist = os.path.join(app.config['GHPAGES'], 'index.html')
 
 		with codecs.open(dist, 'w', 'utf-8-sig') as f:
 			f.write(html_content)
 
+
+def build_pages():
+	with closing(connect_db()) as db:
+		cur = g.db.execute('select * from entries')
+		length = len(cur.fetchall())
+
+		for page in range(1, length/5):
+			start = (page - 1) * 5
+
+			cur = g.db.execute('select title, slug, content from entries order by create_time desc limit 5 offset ?', (start,))
+			entries = [dict(title=row['title'], slug=row['slug'], content=markdown(row['content'])) for row in cur.fetchall()]
+
+			lookup = TemplateLookup(directories=['./templates'])
+			template = Template(filename='./templates/index.html', lookup=lookup)
+			html_content = template.render(entries=entries)
+
+			page_path = os.path.join(app.config['PAGES'], str(page))
+
+			try:
+				os.makedirs(page_path)
+			except OSError:
+				pass
+
+			dist = os.path.join(page_path, 'index.html')
+
+			with codecs.open(dist, 'w', 'utf-8-sig') as f:
+				f.write(html_content)
+
+
+def build_posts():
+	with closing(connect_db()) as db:
+		cur = g.db.execute('select title, content, slug from entries')
+
+		for _entry in cur.fetchall():
+			post_title = _entry['title']
+			post_content = markdown(_entry['content'])
+			post_slug = _entry['slug']
+
+			lookup = TemplateLookup(directories=['./templates'])
+			template = Template(filename='./templates/entry.html', lookup=lookup)
+			html_content = template.render(post_title=post_title, post_content=post_content)
+
+			dist = os.path.join(app.config['POSTS'], post_slug + '.html')
+
+			with codecs.open(dist, 'w', 'utf-8-sig') as f:
+				f.write(html_content)
+
+
+# TODO
+def build_archive():
+	pass
+
+
 @app.route('/build', methods=['POST', 'GET'])
 def build():
 	if request.method == 'POST':
+		try:
+			os.mkdir(app.config['PAGES'])
+			os.mkdir(app.config['POSTS'])
+		except OSError:
+			pass
+
 		# index
 		build_index()
 		# page
+		build_pages()
 		# post
+		build_posts()
 		# archive
 
 		return jsonify(r=True)
