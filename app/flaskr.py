@@ -35,7 +35,34 @@ def init_db():
 			db.commit()
 
 
-def fill_db():
+def fill_draft():
+	files = glob.glob('./_post/*.md')
+
+	for name in files:
+		try:
+			with open(name) as f:
+				print name
+				_file = f.read().decode('utf-8')
+				meta = _file.split('---')[0]
+				content = _file.split('---')[1]
+
+				title = yaml.load(meta)['title']
+				slug = os.path.splitext(ntpath.basename(f.name))[0]
+				create_time = yaml.load(meta)['date']
+				category = ','.join(yaml.load(meta)['categories']) if yaml.load(meta)['categories'] else ''
+				tag = ','.join(yaml.load(meta)['tags']) if yaml.load(meta)['tags'] else ''
+
+				with closing(connect_db()) as db:
+					db.execute('insert into entries (title, slug, content, create_time, category, tag, status) values (?, ?, ?, ?, ?, ?, "draft")',
+										 [title, slug, content, create_time, category, tag])
+					db.commit()
+
+		except IOError as exc:
+			if exc.errno != errno.EISDIR:
+				raise
+
+
+def fill_post():
 	files = glob.glob('./post/*.md')
 
 	for name in files:
@@ -60,6 +87,11 @@ def fill_db():
 		except IOError as exc:
 			if exc.errno != errno.EISDIR:
 				raise
+
+
+def fill_db():
+   fill_post()
+   fill_draft()
 
 
 @app.before_request
@@ -91,7 +123,7 @@ def upload():
 
 @app.route('/')
 def show_entries():
-	cur = g.db.execute('select title, id, content from entries order by create_time desc limit 5')
+	cur = g.db.execute('select title, id, content, status from entries order by create_time desc limit 5')
 	entries = []
 
 	for row in cur.fetchall():
@@ -142,19 +174,35 @@ def new_draft():
 
 @app.route('/publish', methods=['POST'])
 def publish_draft():
-    if request.method == 'POST':
-        title = request.form['title']
-        slug = slugify(title)
+	if request.method == 'POST':
+		title = request.form['title']
+		slug = slugify(title)
 
-        cur = g.db.execute('update entries set status=? where slug=?', ("publish", slug))
-        g.db.commit()
+		cur = g.db.execute('update entries set status=? where slug=?', ("publish", slug))
+		g.db.commit()
 
-        draft_file = os.path.join(app.config['DRAFT_FOLDER'], slug + '.md')
-        publish_file = os.path.join(app.config['POST_FOLDER'], slug + '.md')
+		draft_file = os.path.join(app.config['DRAFT_FOLDER'], slug + '.md')
+		publish_file = os.path.join(app.config['POST_FOLDER'], slug + '.md')
 
-        os.rename(draft_file, publish_file)
+		os.rename(draft_file, publish_file)
 
-        return jsonify(r=True)
+		return jsonify(r=True)
+
+@app.route('/unpublish', methods=['POST'])
+def unpublish():
+	if request.method == 'POST':
+		title = request.form['title']
+		slug = slugify(title)
+
+		cur = g.db.execute('update entries set status=? where slug=?', ("draft", slug))
+		g.db.commit()
+
+		publish_file = os.path.join(app.config['POST_FOLDER'], slug + '.md')
+		draft_file = os.path.join(app.config['DRAFT_FOLDER'], slug + '.md')
+
+		os.rename(publish_file, draft_file)
+
+		return jsonify(r=True)
 
 
 @app.route('/posts/<int:id>')
@@ -230,17 +278,31 @@ def delete_entry(id):
 
 # generate index
 def build_index():
+	lookup = TemplateLookup(directories=['./templates'])
+	template = Template(filename='./templates/index.html', lookup=lookup)
+
 	with closing(connect_db()) as db:
-		cur = db.execute('select title, slug, content from entries order by create_time desc limit 5')
-		entries = [dict(title=row['title'], slug=row['slug'], content=markdown(row['content'])) for row in cur.fetchall()]
-		lookup = TemplateLookup(directories=['./templates'])
-		template = Template(filename='./templates/index.html', lookup=lookup)
-		html_content = template.render(entries=entries)
+		cur = db.execute('select title, slug, content, status from entries order by create_time desc limit 5')
 
-		dist = os.path.join(app.config['GHPAGES'], 'index.html')
+		entries = []
 
-		with codecs.open(dist, 'w', 'utf-8-sig') as f:
-			f.write(html_content)
+		for row in cur.fetchall():
+			status = row['status']
+			title = row['title']
+			slug = row['slug']
+			_content = row['content'].split('<!--more-->')[0]
+			content = markdown(_content)
+
+			if status != 'draft':
+				entry = dict(title=title, slug=slug, content=content)
+				entries.append(entry)
+
+			html_content = template.render(entries=entries)
+
+			dist = os.path.join(app.config['GHPAGES'], 'index.html')
+
+			with codecs.open(dist, 'w', 'utf-8-sig') as f:
+				f.write(html_content)
 
 
 def build_pages():
@@ -251,9 +313,19 @@ def build_pages():
 		for page in range(1, length / 5):
 			start = (page - 1) * 5
 
-			cur = g.db.execute('select title, slug, content from entries order by create_time desc limit 5 offset ?',
+			cur = g.db.execute('select title, slug, content, status from entries order by create_time desc limit 5 offset ?',
 												 (start,))
-			entries = [dict(title=row['title'], slug=row['slug'], content=markdown(row['content'])) for row in cur.fetchall()]
+			for row in cur.fetchall():
+				status = row['status']
+				title = row['title']
+				slug = row['slug']
+				_content = row['content'].split('<!--more-->')[0]
+				content = markdown(_content)
+
+				if status != 'draft':
+						entry = dict(title=title, slug=slug, content=content)
+
+						entries.append(entry)
 
 			lookup = TemplateLookup(directories=['./templates'])
 			template = Template(filename='./templates/index.html', lookup=lookup)
@@ -274,25 +346,34 @@ def build_pages():
 
 def build_posts():
 	with closing(connect_db()) as db:
-		cur = g.db.execute('select title, content, slug from entries')
+		cur = g.db.execute('select title, content, slug, status from entries')
 
 		for _entry in cur.fetchall():
-			post_title = _entry['title']
-			post_content = markdown(_entry['content'])
-			post_slug = _entry['slug']
+			status = _entry['status']
 
-			lookup = TemplateLookup(directories=['./templates'])
-			template = Template(filename='./templates/entry.html', lookup=lookup)
-			html_content = template.render(post_title=post_title, post_content=post_content)
+			if status != 'draft':
+				post_title = _entry['title']
+				post_content = markdown(_entry['content'])
+				post_slug = _entry['slug']
 
-			dist = os.path.join(app.config['POSTS'], post_slug + '.html')
+				html_content = template.render(post_title=post_title, post_content=post_content)
 
-			with codecs.open(dist, 'w', 'utf-8-sig') as f:
-				f.write(html_content)
+				lookup = TemplateLookup(directories=['./templates'])
+				template = Template(filename='./templates/entry.html', lookup=lookup)
+
+				dist = os.path.join(app.config['POSTS'], post_slug + '.html')
+
+				with codecs.open(dist, 'w', 'utf-8-sig') as f:
+					f.write(html_content)
 
 
 # TODO
 def build_archive():
+	pass
+
+# TODO
+def build_tag():
+	# select * from entries where tag like '%mindfire%'
 	pass
 
 

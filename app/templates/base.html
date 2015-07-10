@@ -7,18 +7,13 @@
     <meta name="viewport" content="width=device-width, maximum-scale=1.0" />
     <meta content="" name="description"/>
     <meta content="" name="keywords"/>
-    <link rel="shortcut icon" href="{{{img/favicon.ico}}}" type="image/x-icon">
+    <link rel="shortcut icon" href="/static/img/favicon.ico" type="image/x-icon">
     ${self.more_meta()}
     <title>${self.title()}</title>
-    <!--[if lte IE 8]>
-    <style>
-      .mobile-element { display: none !important; }
-    </style>
-    <![endif]-->
+    <link rel="stylesheet" href="/static/css/base.css"/>
     ${self.css()}
-    <!-- COLLECTED CSS -->
   </head>
-  <body>
+  <body class="yue">
     ${self.content()}
     <script src="/static/js/base.js"></script>
     ${self.js()}
