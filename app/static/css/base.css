@@ -103,6 +103,9 @@ a img {
 * {
   -webkit-tap-highlight-color: rgba(0,0,0,0);
 }
+a {
+  text-decoration: none;
+}
 /**
  * yue.css
  *
@@ -442,6 +445,30 @@ a img {
 .entry .meta {
   font-size: 14px;
   color: #999;
+}
+.pagination-wrapper {
+  margin-top: 15px;
+  text-align: right;
+}
+.pagination-wrapper li {
+  display: inline-block;
+}
+.pagination-wrapper li a {
+  display: block;
+  padding: 5px 8px;
+  background-color: #fff;
+  -webkit-border-radius: 3px;
+  border-radius: 3px;
+  border: 1px solid #fff;
+}
+.pagination-wrapper li a:hover {
+  border: 1px solid #ccc;
+}
+.pagination-wrapper li span {
+  margin: 0 15px;
+}
+.pagination-wrapper .on a {
+  border: 1px solid #ccc;
 }
 
 /*# sourceMappingURL=map/base.css.map */
