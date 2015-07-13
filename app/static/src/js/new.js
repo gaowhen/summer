@@ -26,7 +26,6 @@ $(document).ready(function () {
 		return false
 	})
 
-
 	$doc.on('click', '.btn-publish', function (e) {
 		e.preventDefault()
 

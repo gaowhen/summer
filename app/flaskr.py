@@ -6,6 +6,7 @@ import yaml
 import os
 import ntpath
 import sqlite3
+from datetime import datetime
 
 from flask import Flask, request, g, redirect, render_template, jsonify
 from contextlib import closing
@@ -97,6 +98,7 @@ def fill_db():
 @app.before_request
 def before_request():
 	g.db = connect_db()
+	g.debug = True
 
 
 @app.teardown_request
@@ -123,13 +125,14 @@ def upload():
 
 @app.route('/')
 def show_entries():
-	cur = g.db.execute('select title, id, content, status from entries order by create_time desc limit 5')
+	cur = g.db.execute('select title, id, content, create_time from entries order by create_time desc limit 5')
 	entries = []
 
 	for row in cur.fetchall():
 		_content = row['content'].split('<!--more-->')[0]
 		content = markdown(_content)
-		entry = dict(title=row['title'], id=row['id'], content=content)
+		date = row['create_time']
+		entry = dict(title=row['title'], id=row['id'], content=content, date=date)
 		entries.append(entry)
 
 	return render_template('index.html', **locals())
@@ -139,8 +142,8 @@ def show_entries():
 def pagination(page):
 	start = (page - 1) * 5
 
-	cur = g.db.execute('select title, id, content from entries order by create_time desc limit 5 offset ?', (start,))
-	entries = [dict(title=row['title'], id=row['id'], content=markdown(row['content'])) for row in cur.fetchall()]
+	cur = g.db.execute('select title, id, content, create_time from entries order by create_time desc limit 5 offset ?', (start,))
+	entries = [dict(title=row['title'], id=row['id'], content=markdown(row['content']), date=row['create_time'].strftime('%Y-%m-%d %H:%M')) for row in cur.fetchall()]
 
 	return render_template('index.html', **locals())
 
@@ -151,7 +154,7 @@ def new_draft():
 		title = request.form['title']
 		slug = slugify(title)
 		content = request.form['content']
-		date = request.form['date']
+		date = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
 
 		g.db.execute('insert into entries (title, content, create_time, slug, status) values (?, ?, ?, ?, "draft")',
 								 [title, content, date, slug], )
@@ -160,8 +163,16 @@ def new_draft():
 		filepath = os.path.join(app.config['DRAFT_FOLDER'], slug + '.md')
 		newfile = open(unicode(filepath, 'utf8'), 'w')
 
+		#meta =  yaml.safe_dump({
+		#	'title': title,
+		#	'date': date,
+		#	'tags': [''],
+		#	'categories': ['']
+		#}, default_flow_style=False).replace('- ', '  - ')
 		newfile.write('title: \"' + title + '\"\n')
 		newfile.write('date: ' + date + '\n')
+		#newfile.write(meta + '\n')
+
 		newfile.write('---' + '\n\n')
 		newfile.write(content.encode('utf8'))
 		newfile.write('\n')
@@ -207,10 +218,11 @@ def unpublish():
 
 @app.route('/posts/<int:id>')
 def show_entry(id):
-	cur = g.db.execute('select title, content from entries where id=?', (id,))
+	cur = g.db.execute('select title, content, create_time from entries where id=?', (id,))
 	_entry = cur.fetchone()
 	post_title = _entry['title']
 	post_content = markdown(_entry['content'])
+	date = _entry['create_time']
 
 	return render_template('entry.html', **locals())
 
@@ -279,6 +291,14 @@ def delete_entry(id):
 # TODO
 @app.route('/rss.xml')
 def feed():
+	cur = db.execute('select title, content, slug, create_time from entries order by create_time desc limit 20')
+
+	for row in cur.fetchall():
+		title = row['title']
+		content = row['content']
+		slug = row['slug']
+		create_time = row['create_time']
+
 	pass
 
 
@@ -288,19 +308,20 @@ def build_index():
 	template = Template(filename='./templates/index.html', lookup=lookup)
 
 	with closing(connect_db()) as db:
-		cur = db.execute('select title, slug, content, status from entries order by create_time desc limit 5')
+		cur = db.execute('select title, content, status, create_time, id from entries order by create_time desc limit 5')
 
 		entries = []
 
 		for row in cur.fetchall():
 			status = row['status']
 			title = row['title']
-			slug = row['slug']
+			date = row['create_time']
+			id = row['id']
 			_content = row['content'].split('<!--more-->')[0]
 			content = markdown(_content)
 
 			if status != 'draft':
-				entry = dict(title=title, slug=slug, content=content)
+				entry = dict(title=title, content=content, date=date, id=id)
 				entries.append(entry)
 
 			html_content = template.render(entries=entries)
@@ -319,17 +340,20 @@ def build_pages():
 		for page in range(1, length / 5):
 			start = (page - 1) * 5
 
-			cur = g.db.execute('select title, slug, content, status from entries order by create_time desc limit 5 offset ?',
+			cur = g.db.execute('select title, slug, content, status, create_time, id from entries order by create_time desc limit 5 offset ?',
 												 (start,))
 			for row in cur.fetchall():
 				status = row['status']
 				title = row['title']
-				slug = row['slug']
+				id = row['slug']
+				date = row['create_time']
 				_content = row['content'].split('<!--more-->')[0]
 				content = markdown(_content)
 
+				entries = []
+
 				if status != 'draft':
-						entry = dict(title=title, slug=slug, content=content)
+						entry = dict(title=title, id=id, content=content, date=date)
 
 						entries.append(entry)
 
@@ -352,7 +376,7 @@ def build_pages():
 
 def build_posts():
 	with closing(connect_db()) as db:
-		cur = g.db.execute('select title, content, slug, status from entries')
+		cur = g.db.execute('select title, content, slug, status, create_time from entries')
 
 		for _entry in cur.fetchall():
 			status = _entry['status']
@@ -361,11 +385,12 @@ def build_posts():
 				post_title = _entry['title']
 				post_content = markdown(_entry['content'])
 				post_slug = _entry['slug']
-
-				html_content = template.render(post_title=post_title, post_content=post_content)
+				date = _entry['create_time']
 
 				lookup = TemplateLookup(directories=['./templates'])
 				template = Template(filename='./templates/entry.html', lookup=lookup)
+
+				html_content = template.render(post_title=post_title, post_content=post_content, date=date)
 
 				dist = os.path.join(app.config['POSTS'], post_slug + '.html')
 
@@ -392,6 +417,10 @@ def build():
 		except OSError:
 			pass
 
+		g.debug = False
+
+		# TODO
+		# build static files
 		# index
 		build_index()
 		# page

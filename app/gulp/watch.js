@@ -5,7 +5,7 @@ var watchify = require('./watchify')
 var image = require('./image')
 var stylus = require('./stylus')
 
-gulp.task('watch', ['image', 'watchify'], function () {
+gulp.task('watch', ['image', 'watchify', 'stylus'], function () {
 	watch(config.src.js + '/**/*.js', function () {
 		gulp.start('watchify')
 	})

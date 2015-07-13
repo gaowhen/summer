@@ -2,13 +2,12 @@
 
 <%def name="content()">
 <div class="content">
-	<div class="tool">
-		<a href="#" class="btn-build">build</a>
-	</div>
-
 	% for entry in entries:
 	<div class="entry">
 		<div class="entry-hd">
+			<div class="meta">
+				<span class="time">${entry['date']}</span>
+			</div>
 			<h2><a href="/posts/${entry['id']}">${entry['title']}</a></h2>
 			<a href="/posts/${entry['id']}/edit" class="btn-edit">edit</a>
 			<a href="/posts/${entry['id']}/del" data-pid="${entry['id']}" class="btn-del">del</a>

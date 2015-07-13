@@ -19,7 +19,7 @@ gulp.task('stylus', function () {
 		'!' + config.src.css + '/**/_*.styl'
 	])
 			.pipe(sourcemaps.init())
-			.pipe(stylus({use: [nib(), jeet()], 'include css': true}))
+			.pipe(stylus({use: [nib(), jeet()], import: ['nib', 'jeet'], 'include css': true}))
 			.pipe(replace(REGEX, REG_BUILD))
 			.pipe(sourcemaps.write('./map'))
 			.pipe(gulp.dest(config.dist.css))

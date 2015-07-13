@@ -13,7 +13,8 @@ gulp.task('browserify', function () {
 
   return gulp.src([
     config.src.js + '/**/*.js',
-    '!' + config.src.js + '/base.js'
+    '!' + config.src.js + '/base.js',
+    '!' + config.src.js + '/lib/*.js'
     ])
     .pipe(browserified)
     .pipe(sourcemaps.init({loadMaps: true}))

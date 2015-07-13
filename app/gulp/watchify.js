@@ -31,7 +31,8 @@ gulp.task('watchify', function () {
   function bundle() {
     return gulp.src([
       config.src.js + '/**/*.js',
-      '!' + config.src.js + '/base.js'
+      '!' + config.src.js + '/base.js',
+      '!' + config.src.js + '/lib/*.js'
     ])
       .pipe(bundler(options))
       .on('error', function (e) {
