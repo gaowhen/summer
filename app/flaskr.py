@@ -139,8 +139,8 @@ def show_entries():
 def pagination(page):
 	start = (page - 1) * 5
 
-	cur = g.db.execute('select title, slug, content from entries order by create_time desc limit 5 offset ?', (start,))
-	entries = [dict(title=row['title'], slug=row['slug'], content=markdown(row['content'])) for row in cur.fetchall()]
+	cur = g.db.execute('select title, id, content from entries order by create_time desc limit 5 offset ?', (start,))
+	entries = [dict(title=row['title'], id=row['id'], content=markdown(row['content'])) for row in cur.fetchall()]
 
 	return render_template('index.html', **locals())
 
@@ -274,6 +274,12 @@ def delete_entry(id):
 		return jsonify(r=True)
 
 	return redirect('/')
+
+
+# TODO
+@app.route('/rss.xml')
+def feed():
+	pass
 
 
 # generate index
