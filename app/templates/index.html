@@ -1,4 +1,5 @@
 <%inherit file="/base.html" />
+<%namespace name="pagination" file="/pagination.html"/>
 
 <%def name="content()">
 <div class="content">
@@ -17,6 +18,11 @@
 		</div>
 	</div>
 	% endfor
+
+	<%
+		max = total/perpage if (total/perpage) * perpage == total else total/perpage + 1
+	%>
+	${pagination.page(max, page)}
 </div>
 </%def>
 

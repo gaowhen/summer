@@ -126,6 +126,7 @@ def upload():
 @app.route('/')
 def show_entries():
 	cur = g.db.execute('select title, id, content, create_time from entries order by create_time desc limit 5')
+	perpage = 5
 	entries = []
 
 	for row in cur.fetchall():
@@ -135,15 +136,25 @@ def show_entries():
 		entry = dict(title=row['title'], id=row['id'], content=content, date=date)
 		entries.append(entry)
 
+	cur = g.db.execute('select * from entries')
+	total = len(cur.fetchall())
+	page = 1
+
 	return render_template('index.html', **locals())
 
 
 @app.route('/page/<int:page>')
 def pagination(page):
+	perpage = 5
 	start = (page - 1) * 5
 
 	cur = g.db.execute('select title, id, content, create_time from entries order by create_time desc limit 5 offset ?', (start,))
-	entries = [dict(title=row['title'], id=row['id'], content=markdown(row['content']), date=row['create_time'].strftime('%Y-%m-%d %H:%M')) for row in cur.fetchall()]
+	entries = [dict(title=row['title'], id=row['id'], content=markdown(row['content']), date=row['create_time']) for row in cur.fetchall()]
+
+	cur = g.db.execute('select * from entries')
+	total = len(cur.fetchall())
+
+	page = page
 
 	return render_template('index.html', **locals())
 
@@ -324,12 +335,14 @@ def build_index():
 				entry = dict(title=title, content=content, date=date, id=id)
 				entries.append(entry)
 
-			html_content = template.render(entries=entries)
+		cur = db.execute('select * from entries')
+		total = len(cur.fetchall())
+		html_content = template.render(entries=entries, total=total, page=1, perpage=5)
 
-			dist = os.path.join(app.config['GHPAGES'], 'index.html')
+		dist = os.path.join(app.config['GHPAGES'], 'index.html')
 
-			with codecs.open(dist, 'w', 'utf-8-sig') as f:
-				f.write(html_content)
+		with codecs.open(dist, 'w', 'utf-8-sig') as f:
+			f.write(html_content)
 
 
 def build_pages():
@@ -359,7 +372,7 @@ def build_pages():
 
 			lookup = TemplateLookup(directories=['./templates'])
 			template = Template(filename='./templates/index.html', lookup=lookup)
-			html_content = template.render(entries=entries)
+			html_content = template.render(entries=entries, total=length, page=page, perpage=5)
 
 			page_path = os.path.join(app.config['PAGES'], str(page))
 

@@ -1,0 +1,55 @@
+# -*- coding: utf-8 -*-
+
+<%def name="page_item(page, current)">
+<li ${'class="on"' if page == current else ''}>
+	<a href="/page/${page}" data-page="${page}">${page}</a>
+</li>
+</%def>
+
+<%def name="page(max, page, show_last_page=True)">
+<%
+	start = 1 if page - 4 <= 0 else page - 4
+
+	_end = 9 if page + 4 < 10 else page + 4
+	end = _end if _end < max else max
+
+	if end - start < 9:
+		if start > 0 and end - 8 > 0:
+			start = end - 8
+		else:
+			start = 1
+
+	prev = 0 if page == 1 else page - 1
+	next = page + 1 if max > page else 0
+%>
+
+<ul class="pagination-wrapper">
+	% if page > 1:
+		% if max >= 9:
+		<li>
+			<a href="/page/1">首页</a>
+		</li>
+		% endif
+
+		<li>
+			<a href="?page=${prev}">上一页</a>
+		</li>
+	% endif
+
+	% for p in xrange(start, end + 1):
+		${page_item(p, page)}
+	% endfor
+
+	% if page < max:
+		<li>
+			<a href="/page/${next}">下一页</a>
+		</li>
+
+		% if (show_last_page and max >= 9):
+		<li>
+			<a href="/page/${max}">尾页</a>
+		</li>
+		% endif
+	% endif
+</ul>
+</%def>
