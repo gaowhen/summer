@@ -116,7 +116,7 @@ def upload():
 		if _file:
 			filename = secure_filename(_file.filename)
 			_file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
-			return jsonify(r=True, path='/static/src/img/' + filename)
+			return jsonify(r=True, path='/static/img/' + filename)
 
 		return jsonify(r=False)
 
@@ -231,20 +231,20 @@ def unpublish():
 def show_entry(id):
 	cur = g.db.execute('select title, content, create_time from entries where id=?', (id,))
 	_entry = cur.fetchone()
-	post_title = _entry['title']
-	post_content = markdown(_entry['content'])
-	date = _entry['create_time']
+
+	entry = dict(title=_entry['title'], content=markdown(_entry['content']), date=_entry['create_time'], id=id)
 
 	return render_template('entry.html', **locals())
 
 
 @app.route('/posts/<int:id>/edit')
 def edit_entry(id):
-	cur = g.db.execute('select title, content, slug from entries where id=?', (id,))
+	cur = g.db.execute('select title, content, slug, status from entries where id=?', (id,))
 	_entry = cur.fetchone()
 	post_title = _entry['title']
 	post_content = _entry['content']
 	slug = _entry['slug']
+	status = _entry['status']
 
 	return render_template('edit.html', **locals())
 
@@ -429,8 +429,6 @@ def build():
 			os.mkdir(app.config['POSTS'])
 		except OSError:
 			pass
-
-		g.debug = False
 
 		# TODO
 		# build static files

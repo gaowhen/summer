@@ -1,17 +1,8 @@
 <%inherit file="/base.html" />
+<%namespace name="entry_item" file="/item.html"/>
 
 <%def name="content()">
 <div class="content">
-	<div class="entry">
-		<div class="entry-hd">
-			<h2>${post_title}</h2>
-			<div class="meat">
-				<span class="time">${date}</span>
-			</div>
-		</div>
-		<div class="entry-bd">
-			${post_content}
-		</div>
-	</div>
+	${entry_item.item(entry)}
 </div>
 </%def>

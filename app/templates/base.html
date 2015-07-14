@@ -18,10 +18,12 @@
   <body class="yue">
     <div class="header">
       <h1>GaoWhen高H温</h1>
+			% if g and g.debug:
       <ul class="tool">
         <li><a class="btn-build" href="/build">build</a></li>
         <li><a href="/new">new</a></li>
       </ul>
+			% endif
     </div>
     ${self.content()}
     <div class="footer">

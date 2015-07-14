@@ -1,10 +1,10 @@
-<%inherit file="/base.html" />
+# -*- coding: utf-8 -*-
 
-<%def name="content()">
+<%def name="editor(title='', id='', content='', status='draft')">
 <div class="editor-mod">
 	<div class="editor-hd">
-		<h2><input type="text" class="title" value="${post_title}"/></h2>
-		<input type="hidden" value="${slug}" class="post-slug"/>
+		<h2><label><input type="text" class="title" value="${title}"/></label></h2>
+		<input type="hidden" value="${id}" class="post-id"/>
 	</div>
 
 	<div class="editor-bd">
@@ -17,7 +17,7 @@
 								markdown
 							</header>
 							<div class="entry-markdown-content">
-								<textarea class="post-content" name="" id="" cols="30" rows="10">${post_content}</textarea>
+								<textarea class="post-content" name="" id="" cols="30" rows="10">${content}</textarea>
 							</div>
 						</div>
 
@@ -36,16 +36,10 @@
 	</div>
 
 	<div class="editor-ft">
+		% if status == 'draft':
+		<a href="#" class="btn-draft">save draft</a>
+		% endif
 		<a href="#" class="btn-publish">publish</a>
 	</div>
 </div>
-</%def>
-
-<%def name="css()">
-<link rel="stylesheet" href="/static/src/css/ghostdown.css"/>
-<link rel="stylesheet" href="/static/src/css/dropzone.css"/>
-</%def>
-
-<%def name="js()">
-<script src="/static/js/update.js"></script>
 </%def>
