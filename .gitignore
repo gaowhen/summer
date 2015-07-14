@@ -3,9 +3,9 @@ npm-debug.log
 venv/*
 */*.pyc
 ghpages/*
-app/post/*
-app/static/css/*
-app/static/js/*
-app/static/img/*
+summer/post/*
+summer/static/css/*
+summer/static/js/*
+summer/static/img/*
 *.pyc
 *.db

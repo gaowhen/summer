@@ -10,14 +10,14 @@ $(document).ready(function () {
 
 		var title = $.trim($('.title').val())
 		var content = editor.getMarkdown()
-		var slug = $('.post-slug').val()
+		var id = $('.post-id').val()
 
 		var data =  {
 			title: title,
 			content: content
 		}
 
-		$.post('/post/' + slug + '/update', data)
+		$.post('/posts/' + id + '/update', data)
 			.done(function (res) {
 				console.log(res)
 			})
