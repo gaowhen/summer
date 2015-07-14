@@ -7,3 +7,5 @@ app/post/*
 app/static/css/*
 app/static/js/*
 app/static/img/*
+*.pyc
+*.db

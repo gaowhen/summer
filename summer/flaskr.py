@@ -1,12 +1,11 @@
 # -*- coding: utf-8 -*-
 
 import codecs
-import glob
 import yaml
 import os
-import ntpath
-import sqlite3
 from datetime import datetime
+import shutil
+import math
 
 from flask import Flask, request, g, redirect, render_template, jsonify
 from contextlib import closing
@@ -17,82 +16,13 @@ from werkzeug import secure_filename
 from mako.template import Template
 from mako.lookup import TemplateLookup
 
+from db.connect import connect_db
+
+
 app = Flask(__name__)
 app.config.from_pyfile('app.cfg')
 
 mako = MakoTemplates(app)
-
-
-def connect_db():
-	db = sqlite3.connect(app.config['DATABASE'])
-	db.row_factory = sqlite3.Row
-	return db
-
-
-def init_db():
-	with closing(connect_db()) as db:
-		with app.open_resource('schema.sql', mode='r') as f:
-			db.cursor().executescript(f.read())
-			db.commit()
-
-
-def fill_draft():
-	files = glob.glob('./_post/*.md')
-
-	for name in files:
-		try:
-			with open(name) as f:
-				print name
-				_file = f.read().decode('utf-8')
-				meta = _file.split('---')[0]
-				content = _file.split('---')[1]
-
-				title = yaml.load(meta)['title']
-				slug = os.path.splitext(ntpath.basename(f.name))[0]
-				create_time = yaml.load(meta)['date']
-				category = ','.join(yaml.load(meta)['categories']) if yaml.load(meta)['categories'] else ''
-				tag = ','.join(yaml.load(meta)['tags']) if yaml.load(meta)['tags'] else ''
-
-				with closing(connect_db()) as db:
-					db.execute('insert into entries (title, slug, content, create_time, category, tag, status) values (?, ?, ?, ?, ?, ?, "draft")',
-										 [title, slug, content, create_time, category, tag])
-					db.commit()
-
-		except IOError as exc:
-			if exc.errno != errno.EISDIR:
-				raise
-
-
-def fill_post():
-	files = glob.glob('./post/*.md')
-
-	for name in files:
-		try:
-			with open(name) as f:
-				print name
-				_file = f.read().decode('utf-8')
-				meta = _file.split('---')[0]
-				content = _file.split('---')[1]
-
-				title = yaml.load(meta)['title']
-				slug = os.path.splitext(ntpath.basename(f.name))[0]
-				create_time = yaml.load(meta)['date']
-				category = ','.join(yaml.load(meta)['categories']) if yaml.load(meta)['categories'] else ''
-				tag = ','.join(yaml.load(meta)['tags']) if yaml.load(meta)['tags'] else ''
-
-				with closing(connect_db()) as db:
-					db.execute('insert into entries (title, slug, content, create_time, category, tag) values (?, ?, ?, ?, ?, ?)',
-										 [title, slug, content, create_time, category, tag])
-					db.commit()
-
-		except IOError as exc:
-			if exc.errno != errno.EISDIR:
-				raise
-
-
-def fill_db():
-   fill_post()
-   fill_draft()
 
 
 @app.before_request
@@ -319,7 +249,7 @@ def build_index():
 	template = Template(filename='./templates/index.html', lookup=lookup)
 
 	with closing(connect_db()) as db:
-		cur = db.execute('select title, content, status, create_time, id from entries order by create_time desc limit 5')
+		cur = db.execute('select title, content, status, create_time, id, slug from entries order by create_time desc limit 5')
 
 		entries = []
 
@@ -327,7 +257,7 @@ def build_index():
 			status = row['status']
 			title = row['title']
 			date = row['create_time']
-			id = row['id']
+			id = row['slug']
 			_content = row['content'].split('<!--more-->')[0]
 			content = markdown(_content)
 
@@ -350,11 +280,14 @@ def build_pages():
 		cur = g.db.execute('select * from entries')
 		length = len(cur.fetchall())
 
-		for page in range(1, length / 5):
+		for page in range(1, int(math.ceil(length / float(5))) + 1):
+			print page
 			start = (page - 1) * 5
 
-			cur = g.db.execute('select title, slug, content, status, create_time, id from entries order by create_time desc limit 5 offset ?',
+			cur = g.db.execute('select title, slug, content, status, create_time, id, slug from entries order by create_time desc limit 5 offset ?',
 												 (start,))
+			entries = []
+
 			for row in cur.fetchall():
 				status = row['status']
 				title = row['title']
@@ -363,12 +296,9 @@ def build_pages():
 				_content = row['content'].split('<!--more-->')[0]
 				content = markdown(_content)
 
-				entries = []
-
 				if status != 'draft':
-						entry = dict(title=title, id=id, content=content, date=date)
-
-						entries.append(entry)
+					entry = dict(title=title, id=id, content=content, date=date)
+					entries.append(entry)
 
 			lookup = TemplateLookup(directories=['./templates'])
 			template = Template(filename='./templates/index.html', lookup=lookup)
@@ -377,7 +307,7 @@ def build_pages():
 			page_path = os.path.join(app.config['PAGES'], str(page))
 
 			try:
-				os.makedirs(page_path)
+				os.mkdir(page_path)
 			except OSError:
 				pass
 
@@ -385,6 +315,8 @@ def build_pages():
 
 			with codecs.open(dist, 'w', 'utf-8-sig') as f:
 				f.write(html_content)
+
+			page += 1
 
 
 def build_posts():
@@ -403,9 +335,13 @@ def build_posts():
 				lookup = TemplateLookup(directories=['./templates'])
 				template = Template(filename='./templates/entry.html', lookup=lookup)
 
-				html_content = template.render(post_title=post_title, post_content=post_content, date=date)
+				entry = dict(title=post_title, content=post_content, date=date, id=_entry['slug'])
 
-				dist = os.path.join(app.config['POSTS'], post_slug + '.html')
+				html_content = template.render(entry=entry)
+
+				os.mkdir(os.path.join(app.config['POSTS'], post_slug))
+
+				dist = os.path.join(app.config['POSTS'], post_slug + '/index.html')
 
 				with codecs.open(dist, 'w', 'utf-8-sig') as f:
 					f.write(html_content)
@@ -424,14 +360,13 @@ def build_tag():
 @app.route('/build', methods=['POST', 'GET'])
 def build():
 	if request.method == 'POST':
-		try:
-			os.mkdir(app.config['PAGES'])
-			os.mkdir(app.config['POSTS'])
-		except OSError:
-			pass
+		shutil.rmtree(app.config['GHPAGES'])
+		os.mkdir(app.config['GHPAGES'])
+		os.mkdir(app.config['PAGES'])
+		os.mkdir(app.config['POSTS'])
 
-		# TODO
 		# build static files
+		shutil.copytree(app.config['SRC_STATIC'], app.config['STATIC'])
 		# index
 		build_index()
 		# page
