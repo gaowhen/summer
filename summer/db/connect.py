@@ -2,7 +2,7 @@ import sqlite3
 
 
 def connect_db():
-	db = sqlite3.connect('./summer/flaskr.db')
+	db = sqlite3.connect('./summer/blog.db')
 	db.row_factory = sqlite3.Row
 	return db
 

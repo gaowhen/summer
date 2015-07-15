@@ -1,13 +1,13 @@
-import yaml
 import os
 import glob
 import ntpath
 from contextlib import closing
+import yaml
 
-from db.connect import connect_db
+from summer.db.connect import connect_db
 
 def fill_draft():
-	files = glob.glob('./_post/*.md')
+	files = glob.glob('./summer/_post/*.md')
 
 	for name in files:
 		try:
@@ -34,7 +34,7 @@ def fill_draft():
 
 
 def fill_post():
-	files = glob.glob('./post/*.md')
+	files = glob.glob('./summer/post/*.md')
 
 	for name in files:
 		try:
