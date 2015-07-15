@@ -1,0 +1,28 @@
+Metadata-Version: 1.1
+Name: Flask-Mako
+Version: 0.3
+Summary: Mako templating support for Flask applications.
+Home-page: https://github.com/benselme/flask-mako
+Author: Beranger Enselme, Frank Murphy
+Author-email: benselme@gmail.com
+License: BSD
+Description: 
+        flask-mako
+        ----------
+        
+        This extension for the `Flask <http://flask.pocoo.org/>`_ micro web framework
+        allows developers to use  `Mako Templates
+        <http://http://www.makotemplates.org/>`_ instead of the default Jinja2
+        templating engine.
+        
+        
+Platform: any
+Classifier: Development Status :: 3 - Alpha
+Classifier: Environment :: Web Environment
+Classifier: Intended Audience :: Developers
+Classifier: License :: OSI Approved :: BSD License
+Classifier: Operating System :: OS Independent
+Classifier: Programming Language :: Python
+Classifier: Programming Language :: Python :: 3
+Classifier: Topic :: Internet :: WWW/HTTP :: Dynamic Content
+Classifier: Topic :: Software Development :: Libraries :: Python Modules

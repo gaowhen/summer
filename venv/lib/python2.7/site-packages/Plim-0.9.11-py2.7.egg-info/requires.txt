@@ -1,0 +1,8 @@
+Mako>=0.9.0
+babel>=1.3
+docutils>=0.3
+markdown2>=1.4.2
+PyExecJS>=1.0.4
+CoffeeScript
+pyScss>=1.2.0.post3
+stylus>=0.1.1

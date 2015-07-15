@@ -1,0 +1,21 @@
+Metadata-Version: 1.1
+Name: Flask-Misaka
+Version: 0.3.0
+Summary: A pleasant interface between the Flask web framework and the Misaka Markdown parser.
+Home-page: https://github.com/singingwolfboy/flask-misaka/
+Author: David Baumgold
+Author-email: david@davidbaumgold.com
+License: MIT
+Description: UNKNOWN
+Platform: UNKNOWN
+Classifier: Development Status :: 5 - Production/Stable
+Classifier: Programming Language :: Python
+Classifier: Programming Language :: Python :: 2
+Classifier: Programming Language :: Python :: 2.7
+Classifier: Programming Language :: Python :: 3
+Classifier: Programming Language :: Python :: 3.3
+Classifier: Environment :: Web Environment
+Classifier: Framework :: Flask
+Classifier: Intended Audience :: Developers
+Classifier: License :: OSI Approved :: MIT License
+Classifier: Topic :: Software Development :: Libraries :: Python Modules

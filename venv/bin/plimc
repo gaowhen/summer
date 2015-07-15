@@ -1,0 +1,10 @@
+#!/Users/gaowhen/Lab/flaskr/venv/bin/python2.7
+# EASY-INSTALL-ENTRY-SCRIPT: 'Plim==0.9.11','console_scripts','plimc'
+__requires__ = 'Plim==0.9.11'
+import sys
+from pkg_resources import load_entry_point
+
+if __name__ == '__main__':
+    sys.exit(
+        load_entry_point('Plim==0.9.11', 'console_scripts', 'plimc')()
+    )
