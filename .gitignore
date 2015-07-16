@@ -5,6 +5,6 @@ ghpages/*
 summer/post/*
 summer/_draft/*
 summer/static/css/*
-summer/static/js/*
+summer/static/js/**/*.*
 summer/static/img/*
 *.db

@@ -8,13 +8,15 @@ $(document).ready(function () {
 	$doc.on('click', '.btn-publish', function (e) {
 		e.preventDefault()
 
+		var $this = $(this)
 		var id = $('.post-id').val()
 
-		$.post('/publish/', {
+		$.post('/publish', {
 			id: id
 		})
 				.done(function (res) {
 					console.log(res)
+					$this.removeClass('btn-publish').addClass('btn-unpublish').html('unpublish')
 				})
 
 		return false
@@ -22,6 +24,8 @@ $(document).ready(function () {
 
 	$doc.on('click', '.btn-unpublish', function (e) {
 		e.preventDefault()
+
+		$this = $(this)
 		var id = $('.post-id').val()
 
 		$.post('/unpublish', {
@@ -29,6 +33,7 @@ $(document).ready(function () {
 		})
 				.done(function (res) {
 					console.log(res)
+					$this.addClass('btn-publish').removeClass('btn-unpublish').html('publish')
 				})
 
 		return false
