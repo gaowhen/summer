@@ -7,7 +7,7 @@ import yaml
 from summer.db.connect import connect_db
 
 def fill_draft():
-	files = glob.glob('./summer/_post/*.md')
+	files = glob.glob('./summer/_draft/*.md')
 
 	for name in files:
 		try:
