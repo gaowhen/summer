@@ -12621,34 +12621,47 @@ $(document).ready(function () {
 	$doc.on('click', '.btn-publish', function (e) {
 		e.preventDefault()
 
-		var title = $.trim($('.title').val())
-		var content = editor.getMarkdown()
 		var id = $('.post-id').val()
 
-		var data =  {
-			title: title,
-			content: content
-		}
-
-		$.post('/posts/' + id + '/update', data)
-			.done(function (res) {
-				console.log(res)
-			})
+		$.post('/publish/', {
+			id: id
+		})
+				.done(function (res) {
+					console.log(res)
+				})
 
 		return false
 	})
 
 	$doc.on('click', '.btn-unpublish', function (e) {
 		e.preventDefault()
-		var title = $.trim($('.title').val())
 		var id = $('.post-id').val()
 
 		$.post('/unpublish', {
-			id: id,
-			title: title
+			id: id
 		})
 				.done(function (res) {
 					console.log(res)
+				})
+
+		return false
+	})
+
+	$doc.on('click', '.btn-save', function (e) {
+		e.preventDefault()
+
+		var title = $.trim($('.title').val())
+		var id = $('.post-id').val()
+		var content = editor.getMarkdown()
+
+		$.post('/save', {
+			id: id,
+			title: title,
+			content: content
+		})
+				.done(function (res) {
+					console.log(res)
+					$('.post-id').val(res.id)
 				})
 
 		return false

@@ -35,22 +35,30 @@ def edit_entry(id):
 @bp.route('/<int:id>/update', methods=['POST'])
 def update_entry(id):
 	if request.method == 'POST':
-		cur = g.db.execute('select slug, create_time from entries where id=?', (id,))
+		cur = g.db.execute('select slug, create_time, status from entries where id=?', (id,))
 		_entry = cur.fetchone()
 		name = _entry['slug']
 		create_time = _entry['create_time']
+		status = _entry['status']
 
 		title = request.form['title']
-		slug = slugify(title)
 		content = request.form['content']
-		cur = g.db.execute('update entries set title=?, slug=?, content=? where id=?', (title, slug, content, id))
+		cur = g.db.execute('update entries set title=?, content=? where id=?', (title, content, id))
 		g.db.commit()
 
-		# delete old file
-		os.remove(os.path.join('./summer/post/', name + '.md'))
+		if status == 'draft':
+			# delete old file
+			os.remove(os.path.join('./summer/_draft/', name + '.md'))
 
-		# create new file
-		filepath = os.path.join('./summer/post/', slug + '.md')
+			# create new file
+			filepath = os.path.join('./summer/_draft/', name + '.md')
+		else:
+			# delete old file
+			os.remove(os.path.join('./summer/post/', name + '.md'))
+
+			# create new file
+			filepath = os.path.join('./summer/post/', name + '.md')
+
 		newfile = open(unicode(filepath, 'utf8'), 'w')
 
 		newfile.write('title: \"' + title.encode('utf8') + '\"\n')
@@ -68,14 +76,18 @@ def update_entry(id):
 @bp.route('/<int:id>/del', methods=['POST'])
 def delete_entry(id):
 	if request.method == 'POST':
-		cur = g.db.execute('select slug from entries where id=?', (id,))
+		cur = g.db.execute('select slug, status from entries where id=?', (id,))
 		_entry = cur.fetchone()
 		name = _entry['slug']
+		status = _entry['status']
 
 		cur = g.db.execute('delete from entries where id=?', (id,))
 		g.db.commit()
 
-		os.remove(os.path.join('./summer/post/', name + '.md'))
+		if status == 'draft':
+			os.remove(os.path.join('./summer/_draft/', name + '.md'))
+		else:
+			os.remove(os.path.join('./summer/post/', name + '.md'))
 
 		return jsonify(r=True)
 

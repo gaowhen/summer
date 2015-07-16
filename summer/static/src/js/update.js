@@ -38,26 +38,17 @@ $(document).ready(function () {
 		e.preventDefault()
 
 		var title = $.trim($('.title').val())
+		var id = $('.post-id').val()
 		var content = editor.getMarkdown()
 
-		$.post('/new', {
+		$.post('/save', {
+			id: id,
 			title: title,
 			content: content
 		})
 				.done(function (res) {
 					console.log(res)
-				})
-
-		return false
-	})
-
-	$doc.on('click', '.btn-update', function (e) {
-		e.preventDefault()
-		var id = $('.post-id').val()
-
-		$.post('/post/' + id + '/update')
-				.done(function (res) {
-					console.log(res)
+					$('.post-id').val(res.id)
 				})
 
 		return false
