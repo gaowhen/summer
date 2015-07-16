@@ -3,7 +3,12 @@
 <%def name="item(entry)">
 <div class="entry">
 	<div class="entry-hd">
-		<h2><a href="/posts/${entry['id']}">${entry['title']}</a></h2>
+		<h2>
+			% if entry['status'] == 'draft':
+				<span>#draft</span>
+			% endif
+			<a href="/posts/${entry['id']}">${entry['title']}</a>
+		</h2>
 
 		<div class="meta">
 			<span class="time">${entry['date']}</span>

@@ -10,7 +10,7 @@ gulp.task('watch', ['image', 'watchify', 'stylus'], function () {
 		gulp.start('watchify')
 	})
 
-	watch(config.src.img + '/**/*.+(png|gif|jpg|ico)', function () {
+	watch(config.src.img + '/**/*.+(png|gif|jpg|eot|woff|ttf|svg|ico)', function () {
 		gulp.start('image')
 	})
 

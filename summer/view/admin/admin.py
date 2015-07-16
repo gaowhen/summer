@@ -43,15 +43,15 @@ def new_draft():
 		filepath = os.path.join('./summer/_draft/', slug + '.md')
 		newfile = open(unicode(filepath, 'utf8'), 'w')
 
-		#meta =  yaml.safe_dump({
-		#	'title': title,
-		#	'date': date,
-		#	'tags': [''],
-		#	'categories': ['']
-		#}, default_flow_style=False).replace('- ', '  - ')
-		newfile.write('title: \"' + title + '\"\n')
-		newfile.write('date: ' + date + '\n')
-		#newfile.write(meta + '\n')
+		meta =  yaml.safe_dump({
+			'title': title,
+			'date': date,
+			'tags': [''],
+			'categories': ['']
+		}, default_flow_style=False).replace('- ', '  - ')
+		#newfile.write('title: \"' + title + '\"\n')
+		#newfile.write('date: ' + date + '\n')
+		newfile.write(meta + '\n')
 
 		newfile.write('---' + '\n\n')
 		newfile.write(content.encode('utf8'))
@@ -66,32 +66,43 @@ def new_draft():
 @bp.route('/publish', methods=['POST'])
 def publish_draft():
 	if request.method == 'POST':
-		title = request.form['title']
-		slug = slugify(title)
+		id = request.form['id']
 
-		cur = g.db.execute('update entries set status=? where slug=?', ("publish", slug))
+		cur = g.db.execute('update entries set status=? where id=?', ('publish', id))
 		g.db.commit()
 
-		draft_file = os.path.join('./summer/_draft/', slug + '.md')
-		publish_file = os.path.join('./summer/post/', slug + '.md')
+		cur = g.db.execute('select slug from entries where id=?', (id,))
 
-		os.rename(draft_file, publish_file)
+		entry = cur.fetchone()
+
+		slug = entry['slug']
+
+		draft_file = os.path.join('./summer/_draft/', slug + '.md')
+		post_file = os.path.join('./summer/post/', slug + '.md')
+
+		os.rename(draft_file, post_file)
 
 		return jsonify(r=True)
 
 @bp.route('/unpublish', methods=['POST'])
 def unpublish():
 	if request.method == 'POST':
-		title = request.form['title']
-		slug = slugify(title)
+		id = request.form['id']
 
-		cur = g.db.execute('update entries set status=? where slug=?', ("draft", slug))
+		cur = g.db.execute('update entries set status=? where id=?', ('draft', id))
 		g.db.commit()
 
-		publish_file = os.path.join('./summer/post/', slug + '.md')
-		draft_file = os.path.join('./summer/_draft/', slug + '.md')
+		cur = g.db.execute('select slug from entries where id=?', (id,))
 
-		os.rename(publish_file, draft_file)
+		entry = cur.fetchone()
+
+		filename = entry['slug']
+		print filename
+
+		post_file = os.path.join('./summer/post/', filename + '.md')
+		draft_file = os.path.join('./summer/_draft/', filename + '.md')
+
+		os.rename(post_file, draft_file)
 
 		return jsonify(r=True)
 

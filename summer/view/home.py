@@ -8,7 +8,7 @@ bp = Blueprint('home', __name__)
 
 @bp.route('/')
 def show_entries():
-	cur = g.db.execute('select title, id, content, create_time from entries order by create_time desc limit 5')
+	cur = g.db.execute('select title, id, content, create_time, status from entries order by create_time desc limit 5')
 	perpage = 5
 	entries = []
 
@@ -16,7 +16,8 @@ def show_entries():
 		_content = row['content'].split('<!--more-->')[0]
 		content = markdown(_content)
 		date = row['create_time']
-		entry = dict(title=row['title'], id=row['id'], content=content, date=date)
+		status = row['status']
+		entry = dict(title=row['title'], id=row['id'], content=content, date=date, status=status)
 		entries.append(entry)
 
 	cur = g.db.execute('select * from entries')

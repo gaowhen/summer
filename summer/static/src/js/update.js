@@ -8,19 +8,57 @@ $(document).ready(function () {
 	$doc.on('click', '.btn-publish', function (e) {
 		e.preventDefault()
 
-		var title = $.trim($('.title').val())
-		var content = editor.getMarkdown()
 		var id = $('.post-id').val()
 
-		var data =  {
+		$.post('/publish/', {
+			id: id
+		})
+				.done(function (res) {
+					console.log(res)
+				})
+
+		return false
+	})
+
+	$doc.on('click', '.btn-unpublish', function (e) {
+		e.preventDefault()
+		var id = $('.post-id').val()
+
+		$.post('/unpublish', {
+			id: id
+		})
+				.done(function (res) {
+					console.log(res)
+				})
+
+		return false
+	})
+
+	$doc.on('click', '.btn-save', function (e) {
+		e.preventDefault()
+
+		var title = $.trim($('.title').val())
+		var content = editor.getMarkdown()
+
+		$.post('/new', {
 			title: title,
 			content: content
-		}
+		})
+				.done(function (res) {
+					console.log(res)
+				})
 
-		$.post('/posts/' + id + '/update', data)
-			.done(function (res) {
-				console.log(res)
-			})
+		return false
+	})
+
+	$doc.on('click', '.btn-update', function (e) {
+		e.preventDefault()
+		var id = $('.post-id').val()
+
+		$.post('/post/' + id + '/update')
+				.done(function (res) {
+					console.log(res)
+				})
 
 		return false
 	})

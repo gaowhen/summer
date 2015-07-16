@@ -11,7 +11,6 @@ from werkzeug.utils import import_string
 from summer.db.connect import connect_db
 
 blueprints = [
-	#'summer.middleware.db:bp',
 	'summer.view.home:bp',
   'summer.view.page.page:bp',
 	'summer.view.post.post:bp',
