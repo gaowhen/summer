@@ -32,5 +32,8 @@
     "require-dir": "^0.1.0",
     "vinyl-transform": "^1.0.0",
     "watchify": "^2.2.1"
+  },
+  "devDependencies": {
+    "gulp-debug": "^2.0.1"
   }
 }

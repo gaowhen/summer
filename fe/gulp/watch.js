@@ -5,26 +5,24 @@ var watchify = require('./watchify')
 var image = require('./image')
 var stylus = require('./stylus')
 var html = require('./html')
+var debug = require('gulp-debug')
 
 require('./base-js')
 
 gulp.task('watch', ['base-js', 'watchify', 'stylus', 'image', 'html'], function () {
-	watch(config.src.js + '/**/*.js', function () {
-		gulp.start('watchify')
-	})
+	watch(config.src.js + '/**/*.js', ['watchify'])
 
 	// TO FIX
 	// watch does not work
-	watch(config.src.img + '/**/*.+(png|gif|jpg|eot|woff|ttf|svg|ico)', function (file) {
-		gulp.start('image')
+	// path cannot start with .
+	watch('fe/static/img/**/*.+(png|gif|jpg|eot|woff|ttf|svg|ico)', function () {
+		return gulp.src('fe/static/img/**/*.+(png|gif|jpg|eot|woff|ttf|svg|ico)')
+			.pipe(debug())
+			.pipe(gulp.dest(config.dist.img))
 	})
 
-	watch(config.src.css + '/**/*.styl', function () {
-		gulp.start('stylus')
-	})
+	watch(config.src.css + '/**/*.styl', ['stylus'])
 
-	watch(config.src.template + '/**/*.html', function () {
-		gulp.start('html')
-	})
+	watch(config.src.template + '/**/*.html', ['html'])
 
 })
