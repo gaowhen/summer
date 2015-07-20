@@ -5,4 +5,4 @@ global.REGEX = /\{\{\{(\S*?)\}\}\}/g
 global.REG_BUILD = '/$1'
 global.MANIFEST =  __dirname + '/fe/static/rev-manifest.json'
 
-requireDir('./fe/gulp', {recurse: true});
+requireDir('./gulp', {recurse: true});

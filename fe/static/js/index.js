@@ -2,9 +2,9 @@ $('.btn-build').on('click', function (e) {
 	e.preventDefault()
 
 	$.post('/build')
-		.done(function (res) {
-			console.log(res)
-		})
+			.done(function (res) {
+				console.log(res)
+			})
 
 	return false
 })
@@ -17,11 +17,11 @@ $('.btn-del').on('click', function (e) {
 	var $entry = $this.parents('.entry')
 
 	$.post(uri)
-		.done(function (res) {
-			if (res.r) {
-				$entry.slideUp()
-			}
-		})
+			.done(function (res) {
+				if (res.r) {
+					$entry.slideUp()
+				}
+			})
 
 	return false
 })

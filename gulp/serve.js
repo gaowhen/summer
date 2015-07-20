@@ -6,5 +6,5 @@ var gulp = require('gulp')
 var child = require('child_process')
 
 gulp.task('serve', function () {
-	var server = child.spawn('python', ['flaskr.py']);
+	var server = child.spawn('python', ['app.py']);
 })

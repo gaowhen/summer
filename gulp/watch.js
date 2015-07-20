@@ -21,7 +21,10 @@ gulp.task('watch', ['base-js', 'watchify', 'stylus', 'image', 'html'], function 
 			.pipe(gulp.dest(config.dist.img))
 	})
 
-	watch(config.src.css + '/**/*.styl', ['stylus'])
+	watch(config.src.css + '/**/*.styl', function () {
+		console.log('watch on stylus file')
+		gulp.start('stylus')
+	})
 
 	watch(config.src.template + '/**/*.html', ['html'])
 
