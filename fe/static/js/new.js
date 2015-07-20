@@ -1,4 +1,4 @@
-var Editor = require('editor')
+var Editor = require('./editor')
 
 $(document).ready(function () {
 

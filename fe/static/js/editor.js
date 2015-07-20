@@ -1,5 +1,5 @@
-var CodeMirror = require('lib/codemirror')
-var Showdown = require('lib/showdown')
+var CodeMirror = require('./lib/codemirror')
+var Showdown = require('./lib/showdown')
 var Dropzone = require('dropzone')
 
 function Editor(element) {
