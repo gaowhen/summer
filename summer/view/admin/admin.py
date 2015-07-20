@@ -20,7 +20,7 @@ def upload():
 
 		if _file:
 			filename = secure_filename(_file.filename)
-			_file.save(os.path.join('./summer/static/src/img', filename))
+			_file.save(os.path.join('./fe/static/img', filename))
 			return jsonify(r=True, path='/static/img/' + filename)
 
 		return jsonify(r=False)

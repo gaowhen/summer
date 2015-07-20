@@ -5,14 +5,17 @@ var watchify = require('./watchify')
 var image = require('./image')
 var stylus = require('./stylus')
 var html = require('./html')
-var basejs = require('./base-js')
 
-gulp.task('watch', ['base-js', 'image', 'watchify', 'stylus', 'html'], function () {
+require('./base-js')
+
+gulp.task('watch', ['base-js', 'watchify', 'stylus', 'image', 'html'], function () {
 	watch(config.src.js + '/**/*.js', function () {
 		gulp.start('watchify')
 	})
 
-	watch(config.src.img + '/**/*.+(png|gif|jpg|eot|woff|ttf|svg|ico)', function () {
+	// TO FIX
+	// watch does not work
+	watch(config.src.img + '/**/*.+(png|gif|jpg|eot|woff|ttf|svg|ico)', function (file) {
 		gulp.start('image')
 	})
 

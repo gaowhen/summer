@@ -46,16 +46,23 @@ def build_index():
 			title = row['title']
 			date = row['create_time']
 			id = row['slug']
+			status = row['status']
 			_content = row['content'].split('<!--more-->')[0]
 			content = markdown(_content)
 
 			if status != 'draft':
-				entry = dict(title=title, content=content, date=date, id=id)
+				entry = dict(title=title, content=content, date=date, id=id, status=status)
 				entries.append(entry)
 
+	  # TODO
+	  # filter posts are not draft
 		cur = db.execute('select * from entries')
 		total = len(cur.fetchall())
+
+		print entries
+		print total
 		html_content = template.render(entries=entries, total=total, page=1, perpage=5)
+		print html_content
 
 		dist = os.path.join('./ghpages/', 'index.html')
 
@@ -81,11 +88,12 @@ def build_pages():
 				title = row['title']
 				id = row['slug']
 				date = row['create_time']
+				status = row['status']
 				_content = row['content'].split('<!--more-->')[0]
 				content = markdown(_content)
 
 				if status != 'draft':
-					entry = dict(title=title, id=id, content=content, date=date)
+					entry = dict(title=title, id=id, content=content, date=date, status=status)
 					entries.append(entry)
 
 			lookup = TemplateLookup(directories=['./summer/templates'])
@@ -123,7 +131,7 @@ def build_posts():
 				lookup = TemplateLookup(directories=['./summer/templates'])
 				template = Template(filename='./summer/templates/entry.html', lookup=lookup)
 
-				entry = dict(title=post_title, content=post_content, date=date, id=_entry['slug'])
+				entry = dict(title=post_title, content=post_content, date=date, id=_entry['slug'], status=status)
 
 				html_content = template.render(entry=entry)
 
@@ -145,7 +153,7 @@ def build_tag():
 	pass
 
 
-@bp.route('/build', methods=['POST', 'GET'])
+@bp.route('/build', methods=['POST',])
 def build():
 	if request.method == 'POST':
 		shutil.rmtree('./ghpages')
@@ -155,14 +163,16 @@ def build():
 
 		# build static files
 		shutil.copytree('./summer/static', './ghpages/static')
+
 		# index
 		build_index()
+
 		# page
 		build_pages()
+
 		# post
 		build_posts()
+
 		# archive
 
 		return jsonify(r=True)
-
-	return jsonify(r=False)

@@ -2,6 +2,6 @@ var gulp = require('gulp')
 var config = require('config').gulp
 
 gulp.task('image', function () {
-  return gulp.src(config.src.img + '/**/*.+(png|gif|jpg|eot|woff|ttf|svg|ico)')
-    .pipe(gulp.dest(config.dist.img))
+	return gulp.src(config.src.img + '/**/*.+(png|gif|jpg|eot|woff|ttf|svg|ico)')
+	  .pipe(gulp.dest(config.dist.img))
 })
