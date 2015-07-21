@@ -1,31 +1,21 @@
 var gulp = require('gulp')
 var config = require('config').gulp
 var watch = require('gulp-watch')
-var watchify = require('./watchify')
-var image = require('./image')
-var stylus = require('./stylus')
-var html = require('./html')
-var debug = require('gulp-debug')
-
-require('./base-js')
 
 gulp.task('watch', ['base-js', 'watchify', 'stylus', 'image', 'html'], function () {
-	watch(config.src.js + '/**/*.js', ['watchify'])
+	watch(config.src.js + '/**/*.js', function () {
+		gulp.start('watchify')
+	})
 
-	// TO FIX
-	// watch does not work
-	// path cannot start with .
-	watch('fe/static/img/**/*.+(png|gif|jpg|eot|woff|ttf|svg|ico)', function () {
-		return gulp.src('fe/static/img/**/*.+(png|gif|jpg|eot|woff|ttf|svg|ico)')
-			.pipe(debug())
-			.pipe(gulp.dest(config.dist.img))
+	watch(config.src.img + '/**/*.+(png|gif|jpg|eot|woff|ttf|svg|ico)', function () {
+		gulp.start('image')
 	})
 
 	watch(config.src.css + '/**/*.styl', function () {
-		console.log('watch on stylus file')
 		gulp.start('stylus')
 	})
 
-	watch(config.src.template + '/**/*.html', ['html'])
-
+	watch(config.src.template + '/**/*.html', function () {
+		gulp.start('html')
+	})
 })

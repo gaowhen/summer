@@ -59,10 +59,7 @@ def build_index():
 		cur = db.execute('select * from entries')
 		total = len(cur.fetchall())
 
-		print entries
-		print total
 		html_content = template.render(entries=entries, total=total, page=1, perpage=5)
-		print html_content
 
 		dist = os.path.join('./ghpages/', 'index.html')
 
