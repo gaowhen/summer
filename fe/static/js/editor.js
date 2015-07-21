@@ -78,7 +78,9 @@ Editor.prototype = {
 						})
 
 						that.editor.setValue(newMarkdown)
-						$holder.removeClass('dropzone').html('<img src="' + res.path + '"/>')
+						setTimeout(function () {
+							$holder.removeClass('dropzone').html('<img src="' + res.path + '"/>')
+						}, 1000)
 					}
 				})
 		})
