@@ -9,12 +9,11 @@
 		padding:10px
 
 .header
-	padding:20px 0
-	border-bottom:1px solid #f9f9f9
+	padding:20px 0 0
 	clearfix()
 
-	h1
-		float:left
+	@media $mobile
+		text-align:center
 
 	.tool
 		float:right
@@ -22,9 +21,27 @@
 		li
 			display:inline-block
 
+.content
+
+	h2
+		@media $mobile
+			text-align:center
+			line-height:1.5
+
+ 	.entry
+		border-top:1px solid #f1f1f1
+
+	.meta
+		@media $mobile
+			text-align:center
+
 .footer
 	text-align:center
 	font-size:13px
 	padding:10px 0
 	border-top:1px solid #eee
 	color:#999
+
+	a
+		@media $mobile
+			display:block

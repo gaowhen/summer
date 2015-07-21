@@ -1,6 +1,11 @@
-.pagination-wrapper
+.yue .pagination-wrapper
 	margin-top: 15px
 	text-align: right
+
+	@media $mobile
+		text-align:center
+		padding:0
+		margin:0
 
 	li
 		display: inline-block
@@ -11,13 +16,14 @@
 			background-color: #fff
 			border-radius: 3px
 			border:1px solid #fff
+			font-size:14px
 
 			&:hover
-				border: 1px solid #ccc
+				border-bottom: 3px solid #ccc
 
 		span
 			margin: 0 15px
 
 	.on
 		a
-			border: 1px solid #ccc
+			border-bottom: 3px solid #ccc
