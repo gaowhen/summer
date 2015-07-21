@@ -56,8 +56,9 @@ def build_index():
 
 	  # TODO
 	  # filter posts are not draft
-		cur = db.execute('select * from entries')
+		cur = db.execute('select * from entries where status is not ?', ('draft',))
 		total = len(cur.fetchall())
+		print total
 
 		html_content = template.render(entries=entries, total=total, page=1, perpage=5)
 
@@ -69,15 +70,15 @@ def build_index():
 
 def build_pages():
 	with closing(connect_db()) as db:
-		cur = g.db.execute('select * from entries')
+		cur = db.execute('select * from entries where status is not ?', ('draft',))
 		length = len(cur.fetchall())
 
 		for page in range(1, int(math.ceil(length / float(5))) + 1):
-			print page
+			# print page
 			start = (page - 1) * 5
 
-			cur = g.db.execute('select title, slug, content, status, create_time, id, slug from entries order by create_time desc limit 5 offset ?',
-												 (start,))
+			cur = g.db.execute('select title, slug, content, status, create_time, id, slug from entries where status is not ? order by create_time desc limit 5 offset ?',
+												 ('draft', start,))
 			entries = []
 
 			for row in cur.fetchall():
@@ -153,8 +154,10 @@ def build_tag():
 @bp.route('/build', methods=['POST',])
 def build():
 	if request.method == 'POST':
-		shutil.rmtree('./ghpages')
-		os.mkdir('./ghpages')
+		shutil.rmtree('./ghpages/page')
+		shutil.rmtree('./ghpages/posts')
+		shutil.rmtree('./ghpages/static')
+		# os.mkdir('./ghpages')
 		os.mkdir('./ghpages/page')
 		os.mkdir('./ghpages/posts')
 
