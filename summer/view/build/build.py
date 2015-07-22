@@ -161,8 +161,11 @@ def build():
 		os.mkdir('./ghpages/page')
 		os.mkdir('./ghpages/posts')
 
-		# build static files
+		# copy static files
 		shutil.copytree('./summer/static', './ghpages/static')
+
+		# copy source files
+		# shutil.copytree('./fe/source', './ghpages/')
 
 		# index
 		build_index()
@@ -173,6 +176,10 @@ def build():
 		# post
 		build_posts()
 
+		# TODO
 		# archive
+
+		# TODO
+		# feed
 
 		return jsonify(r=True)
