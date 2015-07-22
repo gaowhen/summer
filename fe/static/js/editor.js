@@ -80,7 +80,7 @@ Editor.prototype = {
 						that.editor.setValue(newMarkdown)
 						setTimeout(function () {
 							$holder.removeClass('dropzone').html('<img src="' + res.path + '"/>')
-						}, 1000)
+						}, 1500)
 					}
 				})
 		})
