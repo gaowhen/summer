@@ -1,9 +1,11 @@
 # -*- coding: utf-8 -*-
 
 import os
+import datetime
 
 from flask import Blueprint, g, request, jsonify
 from flask.ext.misaka import markdown
+from flask.ext.mako import render_template
 from slugify import slugify
 from contextlib import closing
 
@@ -13,31 +15,19 @@ import math
 from mako.template import Template
 from mako.lookup import TemplateLookup
 
+from feedgen.feed import FeedGenerator
+
 from summer.db.connect import connect_db
 
 bp = Blueprint('build', __name__)
 
-# TODO
-@bp.route('/rss.xml')
-def feed():
-	cur = db.execute('select title, content, slug, create_time from entries order by create_time desc limit 20')
 
-	for row in cur.fetchall():
-		title = row['title']
-		content = row['content']
-		slug = row['slug']
-		create_time = row['create_time']
-
-	pass
-
-
-# generate index
 def build_index():
 	lookup = TemplateLookup(directories=['./summer/templates'])
 	template = Template(filename='./summer/templates/index.html', lookup=lookup)
 
 	with closing(connect_db()) as db:
-		cur = db.execute('select title, content, status, create_time, id, slug from entries order by create_time desc limit 5')
+		cur = db.execute('select title, content, status, create_time, id, slug from entries where status is not ? order by create_time desc limit 5', ('draft',))
 
 		entries = []
 
@@ -50,9 +40,8 @@ def build_index():
 			_content = row['content'].split('<!--more-->')[0]
 			content = markdown(_content)
 
-			if status != 'draft':
-				entry = dict(title=title, content=content, date=date, id=id, status=status)
-				entries.append(entry)
+			entry = dict(title=title, content=content, date=date, id=id, status=status)
+			entries.append(entry)
 
 	  # TODO
 	  # filter posts are not draft
@@ -145,10 +134,40 @@ def build_posts():
 def build_archive():
 	pass
 
+
 # TODO
 def build_tag():
 	# select * from entries where tag like '%mindfire%'
 	pass
+
+
+def build_feed():
+	fg = FeedGenerator()
+
+	fg.id('http://gaowhen.com')
+	fg.title(u'Gaowhen高H温')
+	fg.author({'name': u'Miko Gao/糖伴西红柿', 'email': 'gaowhen.com@gmail.com'})
+	fg.link(href='http://gaowhen.com', rel='alternate')
+	fg.subtitle(u'「文不能测字 武不能防身」')
+	fg.link(href='http://gaowhen.com/rss.xml', rel='self')
+	#fg.lastBuildDate(datetime.datetime.now())
+	#fg.pubDate(datetime.datetime.now())
+	fg.language('zh')
+
+	with closing(connect_db()) as db:
+		cur = g.db.execute('select title, content, slug, create_time from entries where status is not ? order by create_time desc', ('draft',))
+
+		for _entry in cur.fetchall():
+			fe = fg.add_entry()
+			fe.id('http://gaowhen.com/' + _entry['slug'] + '/')
+			fe.title(_entry['title'])
+			fe.description(markdown(_entry['content']))
+			#fe.pubdate(_entry['create_time'])
+			fe.link(href='http://gaowhen.com/' + _entry['slug'] + '/')
+			fe.guid('http://gaowhen.com/' + _entry['slug'] + '/')
+
+	rssfeed  = fg.rss_str(pretty=True)
+	fg.rss_file(os.path.join('./ghpages/', 'rss.xml'))
 
 
 @bp.route('/build', methods=['POST',])
@@ -181,5 +200,6 @@ def build():
 
 		# TODO
 		# feed
+		build_feed()
 
 		return jsonify(r=True)
