@@ -6,6 +6,7 @@ import datetime
 from flask import Blueprint, g, request, jsonify
 from flask.ext.misaka import markdown
 from flask.ext.mako import render_template
+from werkzeug.contrib.atom import AtomFeed
 from slugify import slugify
 from contextlib import closing
 
@@ -14,8 +15,6 @@ import shutil
 import math
 from mako.template import Template
 from mako.lookup import TemplateLookup
-
-from feedgen.feed import FeedGenerator
 
 from summer.db.connect import connect_db
 
@@ -142,32 +141,31 @@ def build_tag():
 
 
 def build_feed():
-	fg = FeedGenerator()
-
-	fg.id('http://gaowhen.com')
-	fg.title(u'Gaowhen高H温')
-	fg.author({'name': u'Miko Gao/糖伴西红柿', 'email': 'gaowhen.com@gmail.com'})
-	fg.link(href='http://gaowhen.com', rel='alternate')
-	fg.subtitle(u'「文不能测字 武不能防身」')
-	fg.link(href='http://gaowhen.com/rss.xml', rel='self')
-	#fg.lastBuildDate(datetime.datetime.now())
-	#fg.pubDate(datetime.datetime.now())
-	fg.language('zh')
+	feed = AtomFeed(u'Gaowhen高H温',
+		feed_url='http://gaowhen.com/rss.xml',
+		url='http://gaowhen.com',
+		subtitle='「文不能测字 武不能防身」',
+		author=u'Miko Gao aka 糖伴西红柿',
+		updated=datetime.datetime.now())
 
 	with closing(connect_db()) as db:
 		cur = g.db.execute('select title, content, slug, create_time from entries where status is not ? order by create_time desc', ('draft',))
 
 		for _entry in cur.fetchall():
-			fe = fg.add_entry()
-			fe.id('http://gaowhen.com/' + _entry['slug'] + '/')
-			fe.title(_entry['title'])
-			fe.description(markdown(_entry['content']))
-			#fe.pubdate(_entry['create_time'])
-			fe.link(href='http://gaowhen.com/' + _entry['slug'] + '/')
-			fe.guid('http://gaowhen.com/' + _entry['slug'] + '/')
+			time = datetime.datetime.strptime(_entry['create_time'], '%Y-%m-%d %H:%M:%S')
 
-	rssfeed  = fg.rss_str(pretty=True)
-	fg.rss_file(os.path.join('./ghpages/', 'rss.xml'))
+			feed.add(unicode(_entry['title']),
+				unicode(markdown(_entry['content'])),
+				content_type='html',
+				author=u'Miko Gao aka 糖伴西红柿',
+				published=time,
+				updated=time,
+				id='http://gaowhen.com/' + _entry['slug'] + '/',
+				url='http://gaowhen.com/' + _entry['slug'] + '/'
+			)
+
+		with codecs.open('./ghpages/rss.xml', 'w', 'utf-8-sig') as f:
+			f.write(feed.to_string())
 
 
 @bp.route('/build', methods=['POST',])
