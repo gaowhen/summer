@@ -7,23 +7,22 @@ from flask.ext.mako import render_template
 from flask.ext.misaka import markdown
 from slugify import slugify
 
+from summer.model.entry import Entry
+
 
 bp = Blueprint('post', __name__, url_prefix='/posts')
 
 @bp.route('/<int:id>')
 def show_entry(id):
-	cur = g.db.execute('select title, content, create_time from entries where id=?', (id,))
-	_entry = cur.fetchone()
-
-	entry = dict(title=_entry['title'], content=markdown(_entry['content']), date=_entry['create_time'], id=id)
+	entry = Entry.get(id)
 
 	return render_template('entry.html', **locals())
 
 
 @bp.route('/<int:id>/edit')
 def edit_entry(id):
-	cur = g.db.execute('select title, content, slug, status from entries where id=?', (id,))
-	_entry = cur.fetchone()
+	_entry = Entry.get(id)
+
 	post_title = _entry['title']
 	post_content = _entry['content']
 	slug = _entry['slug']
@@ -34,61 +33,141 @@ def edit_entry(id):
 
 @bp.route('/<int:id>/update', methods=['POST'])
 def update_entry(id):
-	if request.method == 'POST':
-		cur = g.db.execute('select slug, create_time, status from entries where id=?', (id,))
-		_entry = cur.fetchone()
-		name = _entry['slug']
-		create_time = _entry['create_time']
-		status = _entry['status']
+	title = request.form['title']
+	content = request.form['content']
 
+	_entry = Entry.update(title, content, id)
+
+	name = _entry['slug']
+	create_time = _entry['create_time']
+	status = _entry['status']
+
+	if status == 'draft':
+		# delete old file
+		os.remove(os.path.join('./summer/_draft/', name + '.md'))
+
+		# create new file
+		filepath = os.path.join('./summer/_draft/', name + '.md')
+	else:
+		# delete old file
+		os.remove(os.path.join('./summer/post/', name + '.md'))
+
+		# create new file
+		filepath = os.path.join('./summer/post/', name + '.md')
+
+	newfile = open(unicode(filepath, 'utf8'), 'w')
+
+	newfile.write('title: \"' + title.encode('utf8') + '\"\n')
+	newfile.write('date: ' + create_time + '\n')
+	newfile.write('---' + '\n\n')
+	newfile.write(content.encode('utf8'))
+	newfile.write('\n')
+	newfile.close()
+
+	return jsonify(r=True)
+
+
+@bp.route('/<int:id>/del', methods=['POST'])
+def delete_entry(id):
+	_entry = Entry.delete(id)
+
+	name = _entry['slug']
+	status = _entry['status']
+
+	if status == 'draft':
+		os.remove(os.path.join('./summer/_draft/', name + '.md'))
+	else:
+		os.remove(os.path.join('./summer/post/', name + '.md'))
+
+	return jsonify(r=True)
+
+
+@bp.route('/<int:id>/save', methods=['POST'])
+def save(id):
+	if id == '-1':
 		title = request.form['title']
+		slug = slugify(title)
 		content = request.form['content']
-		cur = g.db.execute('update entries set title=?, content=? where id=?', (title, content, id))
+		date = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+
+		g.db.execute('insert into entries (title, content, create_time, slug, status) values (?, ?, ?, ?, "draft")',
+								 [title, content, date, slug], )
 		g.db.commit()
 
-		if status == 'draft':
-			# delete old file
-			os.remove(os.path.join('./summer/_draft/', name + '.md'))
-
-			# create new file
-			filepath = os.path.join('./summer/_draft/', name + '.md')
-		else:
-			# delete old file
-			os.remove(os.path.join('./summer/post/', name + '.md'))
-
-			# create new file
-			filepath = os.path.join('./summer/post/', name + '.md')
-
+		filepath = os.path.join('./summer/_draft/', slug + '.md')
 		newfile = open(unicode(filepath, 'utf8'), 'w')
 
-		newfile.write('title: \"' + title.encode('utf8') + '\"\n')
-		newfile.write('date: ' + create_time + '\n')
+		meta =  yaml.safe_dump({
+			'title': title,
+			'date': date,
+			'tags': [''],
+			'categories': ['']
+		}, default_flow_style=False).replace('- ', '  - ')
+
+		newfile.write(meta + '\n')
 		newfile.write('---' + '\n\n')
 		newfile.write(content.encode('utf8'))
 		newfile.write('\n')
 		newfile.close()
 
-		return jsonify(r=True)
+		cur = g.db.execute('select id, status from entries where slug=?', (slug,))
 
-	return redirect('/')
+		entry = cur.fetchone()
 
+		id = entry['id']
+		status = entry['status']
 
-@bp.route('/<int:id>/del', methods=['POST'])
-def delete_entry(id):
-	if request.method == 'POST':
-		cur = g.db.execute('select slug, status from entries where id=?', (id,))
-		_entry = cur.fetchone()
+		return jsonify(r=True, id=id, status=status)
+	else:
+		title = request.form['title']
+		content = request.form['content']
+
+		_entry = Entry.save_entry(title, content, id)
+
 		name = _entry['slug']
+		date = _entry['create_time']
 		status = _entry['status']
 
-		cur = g.db.execute('delete from entries where id=?', (id,))
-		g.db.commit()
-
 		if status == 'draft':
-			os.remove(os.path.join('./summer/_draft/', name + '.md'))
+			filename = os.path.join('./summer/_draft/', name + '.md')
 		else:
-			os.remove(os.path.join('./summer/post/', name + '.md'))
+			filename = os.path.join('./summer/post/', name + '.md')
 
-		return jsonify(r=True)
+		open(filename, 'w').close()
 
-	return redirect('/')
+		newfile = open(filename, 'w')
+
+		meta =  yaml.safe_dump({
+			'title': title.encode('utf8'),
+			'date': date,
+			'tags': [''],
+			'categories': ['']
+		}, default_flow_style=False).replace('- ', '  - ')
+
+		newfile.write(meta + '\n')
+		newfile.write('---' + '\n\n')
+		newfile.write(content.encode('utf8'))
+		newfile.write('\n')
+		newfile.close()
+
+		return jsonify(r=True, id=id, status=status)
+
+
+@bp.route('/<int:id>/update_status', methods=['POST'])
+def publish_draft(id):
+	status = request.form['status']
+
+	entry = Entry.update_status(id)
+
+	slug = entry['slug']
+
+	draft_file = os.path.join('./summer/_draft/', filename + '.md')
+	post_file = os.path.join('./summer/post/', filename + '.md')
+
+	if status == 'publish':
+		os.rename(draft_file, post_file)
+	else if status == 'unpublish':
+		os.rename(post_file, draft_file)
+
+	return jsonify(r=True)
+
