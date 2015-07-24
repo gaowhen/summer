@@ -36,12 +36,11 @@
 	</div>
 
 	<div class="editor-ft">
-		<a href="#" class="btn-save-draft">save</a>
-		<a href="#" class="btn-save">save</a>
-
 		% if status == 'draft':
+		<a href="#" class="btn-save-draft">save</a>
 		<a href="#" class="btn-publish">publish</a>
 		% else:
+		<a href="#" class="btn-save">save</a>
 		<a href="#" class="btn-unpublish">unpublish</a>
 		% endif
 	</div>
