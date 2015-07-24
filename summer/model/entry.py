@@ -53,12 +53,12 @@ class Entry(object):
 	@classmethod
 	def get_by_slug(cls, slug):
 		with closing(connect_db()) as db:
+			# params must has comma to be a tupple
 			cur = db.execute('select id from entries where slug = ?', (slug,))
 			entry = cur.fetchone()
 
 			return entry
 
-	# TO FIX
 	@classmethod
 	def save_draft(cls, title, content, date, slug):
 		with closing(connect_db()) as db:
@@ -114,6 +114,53 @@ class Entry(object):
 			entry = cls.get(id)
 
 			return entry
+
+
+	@classmethod
+	def get_published_page(cls, page=1):
+		perpage = 5
+		start = (page - 1) * 5
+		entries = []
+
+		with closing(connect_db()) as db:
+			cur = db.execute('select title, content, status, create_time, id, slug from entries where status is not ? order by create_time desc limit ? offset ?', ('draft', perpage, start,))
+
+			for row in cur.fetchall():
+				status = row['status']
+				title = row['title']
+				date = row['create_time']
+				id = row['slug']
+				status = row['status']
+				_content = row['content'].split('<!--more-->')[0]
+				content = markdown(_content)
+
+				entry = dict(title=title, content=content, date=date, id=id, status=status)
+				entries.append(entry)
+
+			return entries
+
+
+	@classmethod
+	def get_all_published(cls):
+		entries = []
+
+		with closing(connect_db()) as db:
+			cur = db.execute('select title, content, slug, status, create_time from entries where status is not ? order by create_time desc', ('draft',))
+
+			for row in cur.fetchall():
+				status = row['status']
+				title = row['title']
+				date = row['create_time']
+				id = row['slug']
+				status = row['status']
+				_content = row['content']
+				content = markdown(_content)
+				slug = row['slug']
+
+				entry = dict(title=title, content=content, date=date, id=id, status=status, slug=slug)
+				entries.append(entry)
+
+			return entries
 
 
 
