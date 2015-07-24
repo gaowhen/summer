@@ -1,5 +1,6 @@
 from contextlib import closing
 from flask.ext.misaka import markdown
+
 from summer.db.connect import connect_db
 
 class Entry(object):
@@ -49,18 +50,25 @@ class Entry(object):
 
 			return total
 
-
 	@classmethod
-	def save_draft(cls, title, content, create_time, slug):
+	def get_by_slug(cls, slug):
+		with closing(connect_db()) as db:
+			cur = db.execute('select id from entries where slug = ?', (slug,))
+			entry = cur.fetchone()
+
+			return entry
+
+	# TO FIX
+	@classmethod
+	def save_draft(cls, title, content, date, slug):
 		with closing(connect_db()) as db:
 			db.execute('insert into entries (title, content, create_time, slug, status) values (?, ?, ?, ?, "draft")',
 									 [title, content, date, slug], )
 			db.commit()
 
-			cur = db.execute('select id from entries where slug = ?', (slug))
-			_entry = cur.fetchone()
+			entry = cls.get_by_slug(slug)
 
-			return _entry
+			return entry
 
 
 	@classmethod
@@ -69,20 +77,19 @@ class Entry(object):
 			cur = db.execute('update entries set title=?, content=? where id=?', (title, content, id))
 			db.commit()
 
-			cur = db.execute('select slug, create_time, status from entries where id=?', (id,))
-
-			_entry = cur.fetchone()
+			_entry = cls.get(id)
 
 			return _entry
 
 
 	@classmethod
-	def delete(clc, id):
+	def delete(cls, id):
 		with closing(connect_db()) as db:
+			entry = cls.get(id)
+
 			cur = db.execute('delete from entries where id=?', (id,))
 			db.commit()
 
-			entry = self.get(id)
 
 			return entry
 
@@ -93,7 +100,7 @@ class Entry(object):
 			cur = db.execute('update entries set title=?, content=? where id=?', (title, content, id))
 			db.commit()
 
-			entry = self.get(id)
+			entry = cls.get(id)
 
 			return entry
 
@@ -104,7 +111,7 @@ class Entry(object):
 			cur = db.execute('update entries set status=? where id=?', (status, id))
 			db.commit()
 
-			entry = self.get(id)
+			entry = cls.get(id)
 
 			return entry
 

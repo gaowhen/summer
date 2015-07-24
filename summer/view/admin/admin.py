@@ -2,18 +2,14 @@
 
 import os
 
-from flask import Blueprint, g, request, jsonify
+from flask import Blueprint, request, jsonify
 from flask.ext.mako import render_template
-from flask.ext.misaka import markdown
-from slugify import slugify
-import yaml
-
 from werkzeug import secure_filename
-from datetime import datetime
 
 from summer.model.entry import Entry
 
 bp = Blueprint('admin', __name__)
+
 
 @bp.route('/upload', methods=['POST', ])
 def upload():

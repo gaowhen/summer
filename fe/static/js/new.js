@@ -29,15 +29,15 @@ $(document).ready(function () {
 	$doc.on('click', '.btn-publish', function (e) {
 		e.preventDefault()
 
-		var title = $.trim($('.title').val())
+		var $this = $(this)
+		var id = $('.post-id').val()
 
-		var data = {
-			title: title
-		}
-
-		$.post('/publish', data)
+		$.post('/posts/' + id + '/update_status', {
+			status: 'publish'
+		})
 			.done(function (res) {
 				console.log(res)
+				$this.removeClass('btn-publish').addClass('btn-unpublish').html('unpublish')
 			})
 
 		return false

@@ -1,4 +1,6 @@
-$('.btn-build').on('click', function (e) {
+var $doc = $(document)
+
+$doc.on('click', '.btn-build', function (e) {
 	e.preventDefault()
 
 	$.post('/build')
@@ -9,14 +11,14 @@ $('.btn-build').on('click', function (e) {
 	return false
 })
 
-$('.btn-del').on('click', function (e) {
+$doc.on('click', '.btn-del', function (e) {
 	e.preventDefault()
 
 	var $this = $(this)
-	var uri = $this.attr('href')
+	var pid = $this.data('pid')
 	var $entry = $this.parents('.entry')
 
-	$.post(uri)
+	$.post('/posts/' + pid + '/del')
 			.done(function (res) {
 				if (res.r) {
 					$entry.slideUp()
