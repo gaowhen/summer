@@ -141,7 +141,7 @@ class Entry(object):
 
 
 	@classmethod
-	def get_all_published(cls):
+	def get_all_published(cls, is_need_summary=False):
 		entries = []
 
 		with closing(connect_db()) as db:
@@ -153,7 +153,12 @@ class Entry(object):
 				date = row['create_time']
 				id = row['slug']
 				status = row['status']
-				_content = row['content']
+
+				if is_need_summary:
+					_content = row['content'].split('<!--more-->')[0]
+				else:
+					_content = row['content']
+
 				content = markdown(_content)
 				slug = row['slug']
 

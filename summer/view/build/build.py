@@ -40,10 +40,15 @@ def build_pages():
 	lookup = TemplateLookup(directories=['./summer/templates'])
 	template = Template(filename='./summer/templates/index.html', lookup=lookup)
 
-	length = len(Entry.get_all_published())
+	all_entries = Entry.get_all_published(True)
+	length = len(all_entries)
 
 	for page in range(1, int(math.ceil(length / float(5))) + 1):
-		entries = Entry.get_published_page(page)
+		start = (page - 1) * 5
+		end = start + 5
+
+		entries = all_entries[start:end]
+
 		html_content = template.render(entries=entries, total=length, page=page, perpage=5)
 
 		page_path = os.path.join('./ghpages/page', str(page))
