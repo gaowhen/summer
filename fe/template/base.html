@@ -1,5 +1,9 @@
 # -*- coding: utf-8 -*-
 
+<%!
+  from summer.config import SITE_NAME, SUBTITLE, META_KEYWORD, META_DESCRIPTION
+%>
+
 <!DOCTYPE html>
 <html>
   <head>
@@ -7,22 +11,22 @@
     <meta name="renderer" content="webkit">
     <meta http-equiv="Cache-Control" content="no-siteapp" />
     <meta name="viewport" content="width=device-width, maximum-scale=1.0" />
-    <meta content="Miko Gao 糖伴西红柿 的博客，谈论创业、前端技术" name="description"/>
-    <meta content="Miko Gao, 糖伴西红柿, blog, mindfire, startup, f2e, 前端, 创业" name="keywords"/>
+    <meta content="${META_DESCRIPTION}" name="description"/>
+    <meta content="${META_KEYWORD}" name="keywords"/>
     <meta name="baidu-site-verification" content="tEppcOuexj" />
     <link rel="shortcut icon" href="{{{img/favicon.ico}}}" type="image/x-icon">
-    <link href="http://gaowhen.com/rss.xml" rel="alternate" type="application/rss+xml" title="GaoWhen高H温" />
+    <link href="/rss.xml" rel="alternate" type="application/rss+xml" title="${SITE_NAME}" />
     ${self.meta()}
     <title>${self.title()}</title>
     <link rel="stylesheet" href="{{{css/base.css}}}"/>
     ${self.css()}
   </head>
-  <body class="yue">
+  <body class="yue${' dev' if g and g.debug else ''}">
     <div class="header">
       <h1 class="page-title">
-        <a href="/">GaoWhen高H温</a>
+        <a href="/">${SITE_NAME}</a>
       </h1>
-      <div class="page-subtitle">「文不能测字 武不能防身」</div>
+      <div class="page-subtitle">${SUBTITLE}</div>
 			% if g and g.debug:
       <ul class="tool">
         <li><a class="btn-build" href="/build">build</a></li>
@@ -33,7 +37,7 @@
     ${self.content()}
     <div class="footer">
       <div class="copyright">
-        &copy; Copyright 2005 - 2015 <a href="https://twitter.com/gaowhen">Miko Gao aka 糖伴西红柿</a>
+        &copy; Copyright 2005 - 2015 <a href="http://gaowhen.com">GaoWhen高H温</a><span>Made By</span><a href="https://twitter.com/gaowhen">糖伴西红柿</a>
       </div>
     </div>
     <script src="{{{js/base.js}}}"></script>

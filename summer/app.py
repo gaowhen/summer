@@ -8,8 +8,6 @@ from flask import Flask, g
 from flask.ext.mako import MakoTemplates
 from werkzeug.utils import import_string
 
-from summer.db.connect import connect_db
-
 blueprints = [
 	'summer.view.home:bp',
   'summer.view.page.page:bp',
@@ -31,15 +29,7 @@ def create_app():
 
 	@app.before_request
 	def before_request():
-		g.db = connect_db()
 		g.debug = True
-
-
-	@app.teardown_request
-	def teardown_request(exception):
-		db = getattr(g, 'db', None)
-		if db is not None:
-			db.close()
 
 
 	return app
