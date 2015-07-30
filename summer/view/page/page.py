@@ -9,9 +9,8 @@ bp = Blueprint('page', __name__, url_prefix='/page')
 
 @bp.route('/<int:page>')
 def pagination(page):
-	perpage = 5
-	entries = Entry.get_page(page)
-	total = Entry.get_length()
+    perpage = 5
+    entries = Entry.get_page(page)
+    total = Entry.get_length()
 
-	return render_template('index.html', **locals())
-
+    return render_template('index.html', **locals())
