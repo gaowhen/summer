@@ -7,12 +7,13 @@ from summer.model.entry import Entry
 
 bp = Blueprint('home', __name__)
 
+
 @bp.route('/')
 def show_entries():
-	page = 1
-	perpage = 5
+    page = 1
+    perpage = 5
 
-	entries = Entry.get_page(page)
-	total = Entry.get_length()
+    entries = Entry.get_page(page)
+    total = Entry.get_length()
 
-	return render_template('index.html', **locals())
+    return render_template('index.html', **locals())
