@@ -140,34 +140,33 @@ def build_feed():
 
 @bp.route('/build', methods=['POST'])
 def build():
-    if request.method == 'POST':
-        shutil.rmtree('./ghpages/page')
-        shutil.rmtree('./ghpages/posts')
-        shutil.rmtree('./ghpages/static')
-        # os.mkdir('./ghpages')
-        os.mkdir('./ghpages/page')
-        os.mkdir('./ghpages/posts')
+    shutil.rmtree('./ghpages/page')
+    shutil.rmtree('./ghpages/posts')
+    shutil.rmtree('./ghpages/static')
+    # os.mkdir('./ghpages')
+    os.mkdir('./ghpages/page')
+    os.mkdir('./ghpages/posts')
 
-        # copy static files
-        shutil.copytree('./summer/static', './ghpages/static')
+    # copy static files
+    shutil.copytree('./summer/static', './ghpages/static')
 
-        # copy source files
-        # shutil.copytree('./fe/source', './ghpages/')
+    # copy source files
+    # shutil.copytree('./fe/source', './ghpages/')
 
-        # index
-        build_index()
+    # index
+    build_index()
 
-        # page
-        build_pages()
+    # page
+    build_pages()
 
-        # post
-        build_posts()
+    # post
+    build_posts()
 
-        # TODO
-        # archive
+    # TODO
+    # archive
 
-        # TODO
-        # feed
-        build_feed()
+    # TODO
+    # feed
+    build_feed()
 
-        return jsonify(r=True)
+    return jsonify(r=True)
