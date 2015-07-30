@@ -1,4 +1,3 @@
-import os
 from contextlib import closing
 from summer.db.connect import connect_db
 

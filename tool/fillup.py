@@ -21,12 +21,17 @@ def fill_draft():
                 title = yaml.load(meta)['title']
                 slug = os.path.splitext(ntpath.basename(f.name))[0]
                 create_time = yaml.load(meta)['date']
-                category = ','.join(yaml.load(meta)['categories']) if yaml.load(meta)['categories'] else ''
-                tag = ','.join(yaml.load(meta)['tags']) if yaml.load(meta)['tags'] else ''
+                category = (','.join(yaml.load(meta)['categories'])
+                            if yaml.load(meta)['categories'] else '')
+                tag = (','.join(yaml.load(meta)['tags'])
+                       if yaml.load(meta)['tags'] else '')
 
                 with closing(connect_db()) as db:
-                    db.execute('insert into entries (title, slug, content, create_time, category, tag, status) values (?, ?, ?, ?, ?, ?, "draft")',
-                                         [title, slug, content, create_time, category, tag])
+                    db.execute('insert into entries (title, slug, content, '
+                               'create_time, category, tag, status) values '
+                               '(?, ?, ?, ?, ?, ?, "draft")',
+                               (title, slug, content, create_time,
+                                category, tag))
                     db.commit()
 
         except IOError as exc:
@@ -48,12 +53,17 @@ def fill_post():
                 title = yaml.load(meta)['title']
                 slug = os.path.splitext(ntpath.basename(f.name))[0]
                 create_time = yaml.load(meta)['date']
-                category = ','.join(yaml.load(meta)['categories']) if yaml.load(meta)['categories'] else ''
-                tag = ','.join(yaml.load(meta)['tags']) if yaml.load(meta)['tags'] else ''
+                category = (','.join(yaml.load(meta)['categories'])
+                            if yaml.load(meta)['categories'] else '')
+                tag = (','.join(yaml.load(meta)['tags'])
+                       if yaml.load(meta)['tags'] else '')
 
                 with closing(connect_db()) as db:
-                    db.execute('insert into entries (title, slug, content, create_time, category, tag) values (?, ?, ?, ?, ?, ?)',
-                                         [title, slug, content, create_time, category, tag])
+                    db.execute('insert into entries (title, slug, content, '
+                               'create_time, category, tag) values '
+                               '(?, ?, ?, ?, ?, ?)',
+                               [title, slug, content, create_time,
+                                category, tag])
                     db.commit()
 
         except IOError as exc:
@@ -62,8 +72,8 @@ def fill_post():
 
 
 def fill_db():
-   fill_post()
-   fill_draft()
+    fill_post()
+    fill_draft()
 
 if __name__ == '__main__':
     fill_db()

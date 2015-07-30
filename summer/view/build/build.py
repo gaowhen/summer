@@ -20,7 +20,8 @@ bp = Blueprint('build', __name__)
 
 def build_index():
     lookup = TemplateLookup(directories=['./summer/templates'])
-    template = Template(filename='./summer/templates/index.html', lookup=lookup)
+    template = Template(
+        filename='./summer/templates/index.html', lookup=lookup)
 
     page = 1
     perpage = 5
@@ -28,7 +29,8 @@ def build_index():
 
     total = len(Entry.get_all_published())
 
-    html_content = template.render(entries=entries, total=total, page=1, perpage=5)
+    html_content = template.render(
+        entries=entries, total=total, page=page, perpage=perpage)
 
     dist = os.path.join('./ghpages/', 'index.html')
 
@@ -38,7 +40,8 @@ def build_index():
 
 def build_pages():
     lookup = TemplateLookup(directories=['./summer/templates'])
-    template = Template(filename='./summer/templates/index.html', lookup=lookup)
+    template = Template(
+        filename='./summer/templates/index.html', lookup=lookup)
 
     all_entries = Entry.get_all_published(True)
     length = len(all_entries)
@@ -49,7 +52,8 @@ def build_pages():
 
         entries = all_entries[start:end]
 
-        html_content = template.render(entries=entries, total=length, page=page, perpage=5)
+        html_content = template.render(
+            entries=entries, total=length, page=page, perpage=5)
 
         page_path = os.path.join('./ghpages/page', str(page))
 
@@ -66,7 +70,8 @@ def build_pages():
 
 def build_posts():
     lookup = TemplateLookup(directories=['./summer/templates'])
-    template = Template(filename='./summer/templates/entry.html', lookup=lookup)
+    template = Template(
+        filename='./summer/templates/entry.html', lookup=lookup)
 
     entries = Entry.get_all_published()
 
@@ -77,7 +82,13 @@ def build_posts():
         date = _entry['date']
         status = _entry['status']
 
-        entry = dict(title=post_title, content=post_content, date=date, id=_entry['slug'], status=status)
+        entry = dict(
+            title=post_title,
+            content=post_content,
+            date=date,
+            id=_entry['slug'],
+            status=status
+        )
 
         html_content = template.render(entry=entry)
 
@@ -102,11 +113,11 @@ def build_tag():
 
 def build_feed():
     feed = AtomFeed(u'Gaowhen高H温',
-        feed_url='http://gaowhen.com/rss.xml',
-        url='http://gaowhen.com',
-        subtitle='「文不能测字 武不能防身」',
-        author=u'Miko Gao aka 糖伴西红柿',
-        updated=datetime.datetime.now())
+                    feed_url='http://gaowhen.com/rss.xml',
+                    url='http://gaowhen.com',
+                    subtitle='「文不能测字 武不能防身」',
+                    author=u'Miko Gao aka 糖伴西红柿',
+                    updated=datetime.datetime.now())
 
     entries = Entry.get_all_published()
 
@@ -114,20 +125,20 @@ def build_feed():
         time = datetime.datetime.strptime(_entry['date'], '%Y-%m-%d %H:%M:%S')
 
         feed.add(unicode(_entry['title']),
-            unicode(markdown(_entry['content'])),
-            content_type='html',
-            author=u'Miko Gao aka 糖伴西红柿',
-            published=time,
-            updated=time,
-            id='http://gaowhen.com/' + _entry['slug'] + '/',
-            url='http://gaowhen.com/' + _entry['slug'] + '/'
-        )
+                 unicode(markdown(_entry['content'])),
+                 content_type='html',
+                 author=u'Miko Gao aka 糖伴西红柿',
+                 published=time,
+                 updated=time,
+                 id='http://gaowhen.com/' + _entry['slug'] + '/',
+                 url='http://gaowhen.com/' + _entry['slug'] + '/'
+                 )
 
     with codecs.open('./ghpages/rss.xml', 'w', 'utf-8-sig') as f:
         f.write(feed.to_string())
 
 
-@bp.route('/build', methods=['POST',])
+@bp.route('/build', methods=['POST'])
 def build():
     if request.method == 'POST':
         shutil.rmtree('./ghpages/page')

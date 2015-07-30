@@ -7,6 +7,7 @@ from summer.model.entry import Entry
 
 bp = Blueprint('page', __name__, url_prefix='/page')
 
+
 @bp.route('/<int:page>')
 def pagination(page):
     perpage = 5

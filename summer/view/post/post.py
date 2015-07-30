@@ -3,9 +3,8 @@
 import os
 import yaml
 
-from flask import Blueprint, g, request, jsonify
+from flask import Blueprint, request, jsonify
 from flask.ext.mako import render_template
-from flask.ext.misaka import markdown
 from slugify import slugify
 from datetime import datetime
 
@@ -13,6 +12,7 @@ from summer.model.entry import Entry
 
 
 bp = Blueprint('post', __name__, url_prefix='/posts')
+
 
 @bp.route('/<int:id>')
 def show_entry(id):
@@ -69,7 +69,7 @@ def update_entry(id):
     return jsonify(r=True)
 
 
-@bp.route('/<int:id>/del', methods=['POST',])
+@bp.route('/<int:id>/del', methods=['POST'])
 def delete_entry(id):
     _entry = Entry.delete(id)
 
@@ -84,7 +84,7 @@ def delete_entry(id):
     return jsonify(r=True)
 
 
-@bp.route('/save_draft', methods=['POST',])
+@bp.route('/save_draft', methods=['POST'])
 def new():
     title = request.form['title']
     slug = slugify(title)
@@ -96,7 +96,7 @@ def new():
     filepath = os.path.join('./summer/_draft/', slug + '.md')
     newfile = open(unicode(filepath, 'utf8'), 'w')
 
-    meta =  yaml.safe_dump({
+    meta = yaml.safe_dump({
         'title': title,
         'date': date,
         'tags': [''],
@@ -112,6 +112,7 @@ def new():
     id = entry['id']
 
     return jsonify(r=True, id=id, status='draft')
+
 
 @bp.route('/<int:id>/save', methods=['POST'])
 def save(id):
@@ -133,7 +134,7 @@ def save(id):
 
     newfile = open(filename, 'w')
 
-    meta =  yaml.safe_dump({
+    meta = yaml.safe_dump({
         'title': title.encode('utf8'),
         'date': date,
         'tags': [''],
