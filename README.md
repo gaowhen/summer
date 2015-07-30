@@ -2,6 +2,8 @@
 
 Just another static site generator, mainly for myself to learn python. 
 
+View the online site. [GaoWhen高H温](http://gaowhen.com)
+
 There are more generators on [https://www.staticgen.com/](https://www.staticgen.com/)
 
 ### virtual env
