@@ -1,6 +1,7 @@
 import os
 import glob
 import ntpath
+import errno
 from contextlib import closing
 import yaml
 
