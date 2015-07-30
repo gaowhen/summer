@@ -8,3 +8,4 @@ summer/static/**/*
 summer/templates/*
 *.db
 fe/static/img/*
+venv/*

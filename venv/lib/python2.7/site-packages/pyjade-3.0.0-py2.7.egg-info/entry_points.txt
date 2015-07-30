@@ -1,3 +1,0 @@
-[console_scripts]
-pyjade = pyjade.convert:convert_file
-
