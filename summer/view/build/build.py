@@ -132,7 +132,7 @@ def build_feed():
                  published=time,
                  updated=time,
                  id=DOMAIN + _entry['slug'] + '/',
-                 url=DOMAIN + _entry['slug'] + '/'
+                 url=DOMAIN + 'posts/' +  _entry['slug'] + '/'
                  )
 
     with codecs.open('./ghpages/rss.xml', 'w', 'utf-8-sig') as f:
