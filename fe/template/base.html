@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 <%!
-  from summer.config import SITE_NAME, SUBTITLE, META_KEYWORD, META_DESCRIPTION
+  from summer.config import SITE_NAME, SUBTITLE, META_KEYWORD, META_DESCRIPTION, AUTHOR, TWITTER, DOMAIN
 %>
 
 <!DOCTYPE html>
@@ -37,7 +37,7 @@
     ${self.content()}
     <div class="footer">
       <div class="copyright">
-        &copy; Copyright 2005 - 2015 <a href="http://gaowhen.com">GaoWhen高H温</a><span>Made By</span><a href="https://twitter.com/gaowhen">糖伴西红柿</a>
+        &copy; Copyright 2005 - 2015 <a href="${DOMAIN}">${SITE_NAME}</a><span>Made By</span><a href="${TWITTER}">${AUTHOR}</a>
       </div>
     </div>
     <script src="{{{js/base.js}}}"></script>
@@ -64,7 +64,7 @@
 <%def name="footer()">
 </%def>
 
-<%def name="title()">Gaowhen高H温</%def>
+<%def name="title()">${SITE_NAME}</%def>
 <%def name="meta()"></%def>
 <%def name="css()"></%def>
 <%def name="js()"></%def>

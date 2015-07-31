@@ -14,6 +14,7 @@ from mako.template import Template
 from mako.lookup import TemplateLookup
 
 from summer.model.entry import Entry
+from summer.config import SITE_NAME, SUBTITLE, AUTHOR, DOMAIN
 
 bp = Blueprint('build', __name__)
 
@@ -112,11 +113,11 @@ def build_tag():
 
 
 def build_feed():
-    feed = AtomFeed(u'Gaowhen高H温',
-                    feed_url='http://gaowhen.com/rss.xml',
-                    url='http://gaowhen.com',
-                    subtitle='「文不能测字 武不能防身」',
-                    author=u'Miko Gao aka 糖伴西红柿',
+    feed = AtomFeed(SITE_NAME,
+                    feed_url=DOMAIN + 'rss.xml',
+                    url=DOMAIN,
+                    subtitle=SUBTITLE,
+                    author=AUTHOR,
                     updated=datetime.datetime.now())
 
     entries = Entry.get_all_published()
@@ -127,11 +128,11 @@ def build_feed():
         feed.add(unicode(_entry['title']),
                  unicode(markdown(_entry['content'])),
                  content_type='html',
-                 author=u'Miko Gao aka 糖伴西红柿',
+                 author=AUTHOR,
                  published=time,
                  updated=time,
-                 id='http://gaowhen.com/' + _entry['slug'] + '/',
-                 url='http://gaowhen.com/' + _entry['slug'] + '/'
+                 id=DOMAIN + _entry['slug'] + '/',
+                 url=DOMAIN + _entry['slug'] + '/'
                  )
 
     with codecs.open('./ghpages/rss.xml', 'w', 'utf-8-sig') as f:
