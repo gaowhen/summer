@@ -1,3 +1,5 @@
+# -*- coding: utf-8 -*-
+
 import sqlite3
 
 
@@ -7,5 +9,10 @@ def connect_db():
     return db
 
 
-if __name__ == '__main__':
-    connect_db()
+def get_db():
+    """Opens a new database connection if there is none yet for the
+    current application context.
+    """
+    if not hasattr(get_db, 'sqlite_db'):
+        get_db.sqlite_db = connect_db()
+    return get_db.sqlite_db
