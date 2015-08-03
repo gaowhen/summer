@@ -16,9 +16,8 @@ def deploy():
 
 	repo = Repo(repo_path)
 
-	if (repo.bare) {
+	if (repo.bare):
 		repo = Repo.init(repo_path, bare=True)
-	}
 
 	index = repo.index
 
