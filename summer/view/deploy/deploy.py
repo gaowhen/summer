@@ -21,7 +21,15 @@ def deploy():
 
 	index = repo.index
 
-	index.add([diff.a_blob.name for diff in index.diff(None)])
+	for diff in index.diff(None):
+		print diff.a_blob.name
+		index.add([diff.a_blob.name])
+
+	for untracked in repo.untracked_files:
+		index.add([untracked])
+
+	#index.add([diff.a_blob.name for diff in index.diff(None)])
+
 	index.commit('new commit')
 	repo.git.push()
 
