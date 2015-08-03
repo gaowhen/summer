@@ -7,6 +7,7 @@ from flask import Blueprint, request, jsonify
 from flask.ext.mako import render_template
 from slugify import slugify
 from datetime import datetime
+from flask.ext.misaka import markdown
 
 from summer.model.entry import Entry
 
@@ -17,6 +18,7 @@ bp = Blueprint('post', __name__, url_prefix='/posts')
 @bp.route('/<int:id>')
 def show_entry(id):
     entry = Entry.get(id)
+    entry['content'] = markdown(entry['content'])
 
     return render_template('entry.html', **locals())
 
@@ -94,7 +96,7 @@ def new():
     entry = Entry.save_draft(title, content, date, slug)
 
     filepath = os.path.join('./summer/_draft/', slug + '.md')
-    newfile = open(unicode(filepath, 'utf8'), 'w')
+    newfile = open(filepath, 'w')
 
     meta = yaml.safe_dump({
         'title': title,
