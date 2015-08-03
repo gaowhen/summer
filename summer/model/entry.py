@@ -17,7 +17,7 @@ class Entry(object):
 
         entry = dict(
             title=_entry['title'],
-            content=_entry['content'],
+            content=markdown(_entry['content']),
             date=_entry['create_time'],
             id=id,
             status=_entry['status'],
