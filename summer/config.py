@@ -7,3 +7,4 @@ META_DESCRIPTION = 'Miko Gao 糖伴西红柿 的博客，谈论创业、前端�
 DOMAIN = 'http://gaowhen.com/'
 AUTHOR = 'Miko Gao aka 糖伴西红柿'
 TWITTER = 'https://twitter.com/gaowhen'
+REPO = 'https://github.com/gaowhen/gaowhen.github.io.git'

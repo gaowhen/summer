@@ -10,3 +10,4 @@ misaka==1.0.2
 PyYAML==3.11
 slugify==0.0.1
 Werkzeug==0.10.4
+GitPython=1.0.1

@@ -14,6 +14,7 @@ blueprints = [
     'summer.view.post.post:bp',
     'summer.view.admin.admin:bp',
     'summer.view.build.build:bp',
+    'summer.view.deploy.deploy:bp',
 ]
 
 
