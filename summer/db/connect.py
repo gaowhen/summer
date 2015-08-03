@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 
 import sqlite3
+from flask import g
 
 
 def connect_db():
@@ -9,10 +10,15 @@ def connect_db():
     return db
 
 
+# http://flask.pocoo.org/docs/0.10/appcontext/
 def get_db():
     """Opens a new database connection if there is none yet for the
     current application context.
     """
-    if not hasattr(get_db, 'sqlite_db'):
-        get_db.sqlite_db = connect_db()
-    return get_db.sqlite_db
+    db = getattr(g, '_database', None)
+    if db is None:
+        db = g._database = connect_db()
+    return db
+
+
+

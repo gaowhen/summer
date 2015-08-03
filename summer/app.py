@@ -4,7 +4,7 @@ import sys
 # FIXME correct encodings and remove this hack
 reload(sys).setdefaultencoding('utf-8')
 
-from flask import Flask, g, _app_ctx_stack
+from flask import Flask, g
 from flask.ext.mako import MakoTemplates
 from werkzeug.utils import import_string
 
@@ -33,10 +33,9 @@ def create_app():
         g.debug = True
 
     @app.teardown_appcontext
-    def close_db_connection(exception):
-        """Closes the database again at the end of the request."""
-        get_db = _app_ctx_stack.get_db
-        if hasattr(get_db, 'sqlite_db'):
-            get_db.sqlite_db.close()
+    def teardown_db(exception):
+        db = getattr(g, '_database', None)
+        if db is not None:
+            db.close()
 
     return app
