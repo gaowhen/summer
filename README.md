@@ -40,6 +40,12 @@ and it's on [http://127.0.0.1:5000](http://127.0.0.1:5000)
 
 The build button is in page header, all files are exported to ghpages folder
 
+### deploy
+
+The deploy button is in page header, next to build button. 
+
+Just remember to add your github repo uri to summery/config.py 
+
 ### MIT license
 
 Copyright (c) 2015 Miko Gao <gaowhen.com@gmail.com>
