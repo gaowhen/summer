@@ -16,6 +16,10 @@ def deploy():
 
 	repo = Repo(repo_path)
 
+	if (repo.bare) {
+		repo = Repo.init(repo_path, bare=True)
+	}
+
 	index = repo.index
 
 	index.add([diff.a_blob.name for diff in index.diff(None)])
