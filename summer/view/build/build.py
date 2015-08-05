@@ -20,9 +20,9 @@ bp = Blueprint('build', __name__)
 
 
 def build_index():
-    lookup = TemplateLookup(directories=['./summer/templates'])
+    lookup = TemplateLookup(directories=['./fe/template'])
     template = Template(
-        filename='./summer/templates/index.html', lookup=lookup)
+        filename='./fe/template/index.html', lookup=lookup)
 
     page = 1
     perpage = 5
@@ -40,9 +40,9 @@ def build_index():
 
 
 def build_pages():
-    lookup = TemplateLookup(directories=['./summer/templates'])
+    lookup = TemplateLookup(directories=['./fe/template'])
     template = Template(
-        filename='./summer/templates/index.html', lookup=lookup)
+        filename='./fe/template/index.html', lookup=lookup)
 
     all_entries = Entry.get_all_published(True)
     length = len(all_entries)
@@ -70,9 +70,9 @@ def build_pages():
 
 
 def build_posts():
-    lookup = TemplateLookup(directories=['./summer/templates'])
+    lookup = TemplateLookup(directories=['./fe/template'])
     template = Template(
-        filename='./summer/templates/entry.html', lookup=lookup)
+        filename='./fe/template/entry.html', lookup=lookup)
 
     entries = Entry.get_all_published()
 
@@ -149,7 +149,7 @@ def build():
     os.mkdir('./ghpages/posts')
 
     # copy static files
-    shutil.copytree('./summer/static', './ghpages/static')
+    #shutil.copytree('./summer/static', './ghpages/static')
 
     # copy source files
     # shutil.copytree('./fe/source', './ghpages/')

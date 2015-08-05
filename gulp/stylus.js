@@ -9,7 +9,6 @@ var jeet = require('jeet')
 var config = require('config').gulp
 var sourcemaps = require('gulp-sourcemaps')
 var replace = require('gulp-replace')
-var debug = require('gulp-debug')
 
 var REGEX = global.REGEX
 var REG_BUILD = global.REG_BUILD
@@ -23,6 +22,5 @@ gulp.task('stylus', function () {
 		.pipe(stylus({use: [nib(), jeet()], import: ['nib', 'jeet'], 'include css': true}))
 		.pipe(replace(REGEX, REG_BUILD))
 		.pipe(sourcemaps.write('./map'))
-		.pipe(debug())
 		.pipe(gulp.dest(config.dist.css))
 })

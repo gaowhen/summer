@@ -18,6 +18,7 @@ var dist = {
 
 var release = {
 	path: path.resolve(__dirname, '../ghpages/static'),
+  html: path.resolve(__dirname, '../ghpages'),
 	js: path.resolve(__dirname, '../ghpages/static/js'),
 	css: path.resolve(__dirname, '../ghpages/static/css'),
 	img: path.resolve(__dirname, '../ghpages/static/img')
@@ -25,7 +26,8 @@ var release = {
 
 var config = {
   src: src,
-  dist: dist
+  dist: dist,
+  release: release
 }
 
 module.exports = config
