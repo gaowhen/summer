@@ -3,6 +3,7 @@ var config = require('config').gulp
 var browserify = require('browserify')
 var watchify   = require('watchify')
 var transform  = require('vinyl-transform')
+var sourcemaps = require('gulp-sourcemaps')
 
 gulp.task('watchify', function () {
   var options = {
@@ -32,6 +33,7 @@ gulp.task('watchify', function () {
     return gulp.src([
       config.src.js + '/**/*.js',
       '!' + config.src.js + '/base.js',
+      '!' + config.src.js + '/lib/*.js',
       '!' + config.src.js + '/**/_*.js'
     ])
       .pipe(bundler(options))
@@ -39,6 +41,7 @@ gulp.task('watchify', function () {
         console.log(e.message)
         this.emit('end')
       })
+      .pipe(sourcemaps.write('./map'))
       .pipe(gulp.dest(config.dist.js))
   }
 
