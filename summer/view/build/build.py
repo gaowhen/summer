@@ -143,14 +143,10 @@ def build_feed():
 @bp.route('/build', methods=['POST'])
 def build():
     shutil.rmtree('./ghpages/page')
-    shutil.rmtree('./ghpages/posts')
-    shutil.rmtree('./ghpages/static')
-    # os.mkdir('./ghpages')
     os.mkdir('./ghpages/page')
-    os.mkdir('./ghpages/posts')
 
-    # copy static files
-    #shutil.copytree('./summer/static', './ghpages/static')
+    shutil.rmtree('./ghpages/posts')
+    os.mkdir('./ghpages/posts')
 
     # copy source files
     # shutil.copytree('./fe/source', './ghpages/')
@@ -167,8 +163,13 @@ def build():
     # TODO
     # archive
 
-    # TODO
     # feed
     build_feed()
+
+    # TODO
+    # site map
+
+    shutil.rmtree('./ghpages/static')
+    subprocess.call(['gulp', 'release'])
 
     return jsonify(r=True)
