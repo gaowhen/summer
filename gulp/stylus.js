@@ -15,8 +15,7 @@ var REG_BUILD = global.REG_BUILD
 
 gulp.task('stylus', function () {
 	return gulp.src([
-		config.src.css + '/**/*.styl',
-		'!' + config.src.css + '/**/_*.styl'
+		config.src.css + '/**/*.styl'
 	])
 		.pipe(sourcemaps.init())
 		.pipe(stylus({use: [nib(), jeet()], import: ['nib', 'jeet'], 'include css': true}))
