@@ -80,8 +80,8 @@ class Entry(object):
         db = get_db()
         db.execute('insert into entries '
                    '(title, content, create_time, slug, status) '
-                   'values (?, ?, ?, ?, "draft")',
-                   (title, content, date, slug))
+                   'values (?, ?, ?, ?, ?)',
+                   (title, content, date, slug, 'draft'))
         db.commit()
 
         entry = cls.get_by_slug(slug)

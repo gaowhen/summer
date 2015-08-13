@@ -5,9 +5,10 @@ $(document).ready(function () {
 	var editor = new Editor($('.editor'))
 	var $doc = $(document)
 
-	$doc.on('click', '.btn-draft', function (e) {
+	$doc.on('click', '.btn-save-draft', function (e) {
 		e.preventDefault()
 
+		var $this = $(this)
 		var title = $.trim($('.title').val())
 		var content = editor.getMarkdown()
 		var date = new Date()
@@ -18,9 +19,11 @@ $(document).ready(function () {
 			date: date
 		}
 
-		$.post('/new', data)
+		$.post('/posts/save_draft', data)
 			.done(function (res) {
 				console.log(res)
+				$this.removeClass('btn-save-draft').addClass('btn-save')
+				$('.post-id').val(res.id)
 			})
 
 		return false

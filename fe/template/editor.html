@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-<%def name="editor(title='', id='-1', content='', status='draft')">
+<%def name="editor(title='', id='-1', content='', status='new')">
 <div class="editor-mod">
 	<div class="editor-hd">
 		<h2><label><input type="text" class="title" value="${title}"/></label></h2>
@@ -36,8 +36,11 @@
 	</div>
 
 	<div class="editor-ft">
-		% if status == 'draft':
+		% if status == 'new':
 		<a href="#" class="btn-save-draft">save</a>
+		<a href="#" class="btn-publish">publish</a>
+		% elif status == 'draft':
+		<a href="#" class="btn-save">save</a>
 		<a href="#" class="btn-publish">publish</a>
 		% else:
 		<a href="#" class="btn-save">save</a>
