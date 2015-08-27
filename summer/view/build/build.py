@@ -4,7 +4,7 @@ import os
 import datetime
 import subprocess
 
-from flask import Blueprint, request, jsonify
+from flask import Blueprint, request, jsonify, current_app
 from flask.ext.misaka import markdown
 from werkzeug.contrib.atom import AtomFeed
 
@@ -15,7 +15,6 @@ from mako.template import Template
 from mako.lookup import TemplateLookup
 
 from summer.model.entry import Entry
-from summer.config import SITE_NAME, SUBTITLE, AUTHOR, DOMAIN
 
 bp = Blueprint('build', __name__)
 
@@ -114,11 +113,11 @@ def build_tag():
 
 
 def build_feed():
-    feed = AtomFeed(SITE_NAME,
-                    feed_url=DOMAIN + 'rss.xml',
-                    url=DOMAIN,
-                    subtitle=SUBTITLE,
-                    author=AUTHOR,
+    feed = AtomFeed(current_app.config['SITE_NAME'],
+                    feed_url=current_app.config['DOMAIN'] + 'rss.xml',
+                    url=current_app.config['DOMAIN'],
+                    subtitle=current_app.config['SUBTITLE'],
+                    author=current_app.config['AUTHOR'],
                     updated=datetime.datetime.now())
 
     entries = Entry.get_all_published()

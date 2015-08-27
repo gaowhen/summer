@@ -4,7 +4,9 @@ import ntpath
 import errno
 from contextlib import closing
 import yaml
+from flask import current_app
 
+from summer.app import create_app
 from summer.db.connect import connect_db
 
 
@@ -73,6 +75,10 @@ def fill_post():
 
 
 def fill_db():
+    app = create_app('product')
+    _context = app.app_context()
+    _context.push()
+
     fill_post()
     fill_draft()
 

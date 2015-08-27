@@ -1,9 +1,7 @@
 # -*- coding: utf-8 -*-
 
-from flask import Blueprint, jsonify
+from flask import Blueprint, jsonify, current_app
 from git import Repo, Actor
-
-from summer.config import REPO
 
 
 bp = Blueprint('deploy', __name__)
@@ -12,7 +10,7 @@ bp = Blueprint('deploy', __name__)
 @bp.route('/deploy', methods=['POST'])
 def deploy():
 	repo_path = './ghpages'
-	repo_url = REPO
+	repo_url = current_app.config['REPO']
 
 	repo = Repo(repo_path)
 

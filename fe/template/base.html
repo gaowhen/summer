@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 <%!
-  from summer.config import SITE_NAME, SUBTITLE, META_KEYWORD, META_DESCRIPTION, AUTHOR, TWITTER, DOMAIN
+  from flask import current_app
 %>
 
 <!DOCTYPE html>
@@ -11,11 +11,11 @@
     <meta name="renderer" content="webkit">
     <meta http-equiv="Cache-Control" content="no-siteapp" />
     <meta name="viewport" content="width=device-width, maximum-scale=1.0" />
-    <meta content="${META_DESCRIPTION}" name="description"/>
-    <meta content="${META_KEYWORD}" name="keywords"/>
+    <meta content="${current_app.config['META_DESCRIPTION']}" name="description"/>
+    <meta content="${current_app.config['META_KEYWORD']}" name="keywords"/>
     <meta name="baidu-site-verification" content="tEppcOuexj" />
     <link rel="shortcut icon" href="{{{img/favicon.ico}}}" type="image/x-icon">
-    <link href="/rss.xml" rel="alternate" type="application/rss+xml" title="${SITE_NAME}" />
+    <link href="/rss.xml" rel="alternate" type="application/rss+xml" title="${current_app.config['SITE_NAME']}" />
     ${self.meta()}
     <title>${self.title()}</title>
     <link rel="stylesheet" href="{{{css/base.css}}}"/>
@@ -24,9 +24,9 @@
   <body class="yue${' dev' if g and g.debug else ''}">
     <div class="header">
       <h1 class="page-title">
-        <a href="/">${SITE_NAME}</a>
+        <a href="/">${current_app.config['SITE_NAME']}</a>
       </h1>
-      <div class="page-subtitle">${SUBTITLE}</div>
+      <div class="page-subtitle">${current_app.config['SUBTITLE']}</div>
 			% if g and g.debug:
       <ul class="tool">
         <li><a href="/new">new</a></li>
@@ -38,7 +38,7 @@
     ${self.content()}
     <div class="footer">
       <div class="copyright">
-        &copy; Copyright 2005 - 2015 <a href="${DOMAIN}">${SITE_NAME}</a><span>Made By</span><a href="${TWITTER}">${AUTHOR}</a>
+        &copy; Copyright 2005 - 2015 <a href="${current_app.config['DOMAIN']}">${current_app.config['SITE_NAME']}</a><span>Made By</span><a href="${current_app.config['TWITTER']}">${current_app.config['AUTHOR']}</a>
       </div>
     </div>
     <script src="{{{js/base.js}}}"></script>
@@ -65,7 +65,7 @@
 <%def name="footer()">
 </%def>
 
-<%def name="title()">${SITE_NAME}</%def>
+<%def name="title()">${current_app.config['SITE_NAME']}</%def>
 <%def name="meta()"></%def>
 <%def name="css()"></%def>
 <%def name="js()"></%def>

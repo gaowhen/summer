@@ -7,7 +7,6 @@ from summer.model.entry import Entry
 
 bp = Blueprint('home', __name__)
 
-
 @bp.route('/')
 def show_entries():
     page = 1

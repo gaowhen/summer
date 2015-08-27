@@ -6,8 +6,7 @@ reload(sys).setdefaultencoding('utf-8')
 
 from summer.app import create_app
 
-app = create_app()
-app.config['DEBUG'] = True
+app = create_app('product')
 
 if __name__ == '__main__':
     app.run()

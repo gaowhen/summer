@@ -8,6 +8,8 @@ from flask import Flask, g
 from flask.ext.mako import MakoTemplates
 from werkzeug.utils import import_string
 
+from summer.config import config
+
 blueprints = [
     'summer.view.home:bp',
     'summer.view.page.page:bp',
@@ -18,9 +20,12 @@ blueprints = [
 ]
 
 
-def create_app():
+def create_app(config_name):
     app = Flask(__name__)
-    app.config.from_pyfile('app.cfg')
+
+    app.config.from_object(config[config_name])
+    print '*' * 100
+    print app.config['DATABASE_URI']
 
     MakoTemplates(app)
 
@@ -28,9 +33,12 @@ def create_app():
         blueprint = import_string(blueprint_qualname)
         app.register_blueprint(blueprint)
 
+
     @app.before_request
     def before_request():
-        g.debug = True
+        #g.debug = True
+        g.debug = app.config['DEBUG']
+
 
     @app.teardown_appcontext
     def teardown_db(exception):
