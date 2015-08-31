@@ -25,14 +25,17 @@ class BaseTestCase(unittest.TestCase):
 			self.db.cursor().executescript(f.read())
 			self.db.commit()
 
+
 	def tearDown(self):
 		self.db.execute('drop table if exists entries')
 		self.app_context.pop()
 
+
 	def test_app_exists(self):
 		self.assertFalse(current_app is None)
 
-	def test_save_draft(self):
+
+	def add_draft(self):
 		title = '十万嬉皮'.decode('utf-8')
 		slug = slugify(title)
 		content = '大梦一场 的董二千先生\
@@ -57,16 +60,13 @@ class BaseTestCase(unittest.TestCase):
                    前已无通路 后不见归途'.decode('utf-8')
 
 		date = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
-		entry = Entry.save_draft(title, content, date, slug)
 
-		self.assertTrue(entry)
-		self.assertEqual(entry['title'], title)
-		self.assertEqual(entry['slug'], slug)
-		self.assertEqual(entry['content'], content)
-		self.assertEqual(entry['create_time'], date)
-		self.assertEqual(entry['status'], 'draft')
+		return Entry.save_draft(title, content, date, slug)
+
 
 	def test_update_draft(self):
+		_entry = self.add_draft()
+
 		title = '秦皇岛'.decode('utf-8')
 		content = '站在能分割世界的桥\
                    还是看不清 在那些时刻\
@@ -82,13 +82,34 @@ class BaseTestCase(unittest.TestCase):
                    看着他们 为了彼岸\
                    骄傲地 骄傲的 灭亡'.decode('utf-8')
 
-		entry = Entry.update(title, content, 1)
-		print entry
+		date = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+
+		entry = Entry.update(title, content, _entry['id'])
 
 		self.assertTrue(entry)
 		self.assertEqual(entry['title'], title)
 		self.assertEqual(entry['content'], content)
 		self.assertEqual(entry['status'], 'draft')
+
+
+	def test_publish(self):
+		_entry = self.add_draft()
+
+		entry = Entry.update_status(_entry['id'], 'publish')
+
+		self.assertTrue(entry)
+		self.assertEqual(entry['status'], 'publish')
+
+
+	def test_unpublish(self):
+		_entry = self.add_draft()
+
+		entry = Entry.update_status(_entry['id'], 'publish')
+		entry = Entry.update_status(_entry['id'], 'draft')
+
+		self.assertTrue(entry)
+		self.assertEqual(entry['status'], 'draft')
+
 
 if __name__ == '__main__':
     unittest.main()
