@@ -24,8 +24,6 @@ def create_app(config_name):
     app = Flask(__name__)
 
     app.config.from_object(config[config_name])
-    print '*' * 100
-    print app.config['DATABASE_URI']
 
     MakoTemplates(app)
 

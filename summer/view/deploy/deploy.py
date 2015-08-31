@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 from flask import Blueprint, jsonify, current_app
-from git import Repo, Actor
+from git import Repo
 
 
 bp = Blueprint('deploy', __name__)
@@ -21,7 +21,7 @@ def deploy():
 
 	for diff in index.diff(None):
 		print diff.a_blob
-		index.add([diff.a_blob])
+		index.add([diff.a_blob.name])
 	#index.add([diff.a_blob.name for diff in index.diff(None)])
 
 	for untracked in repo.untracked_files:

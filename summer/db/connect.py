@@ -4,7 +4,6 @@ import sqlite3
 from flask import g, current_app
 
 def connect_db():
-    #db = sqlite3.connect('./summer/blog.db')
     db = sqlite3.connect(current_app.config['DATABASE_URI'])
     db.row_factory = sqlite3.Row
     return db
