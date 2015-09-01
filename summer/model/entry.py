@@ -1,3 +1,5 @@
+# -*- coding: utf-8 -*-
+
 from flask.ext.misaka import markdown
 
 from summer.db.connect import get_db
