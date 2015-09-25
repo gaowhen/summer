@@ -20,7 +20,7 @@ create summer/post/ summer/_draft/ folder
 
 and put all markdown files into summer/post/ folder, draft markdown files into summer/_draft/ folder 
 
-### ghapage repo
+### ghpage repo
 
 crete ghpages, ghpages/post/, ghpages/page/, ghpages/static/ folders
 
