@@ -27,13 +27,13 @@
         <a href="/">${current_app.config['SITE_NAME']}</a>
       </h1>
       <div class="page-subtitle">${current_app.config['SUBTITLE']}</div>
-			% if g and g.debug:
+      % if g and g.debug:
       <ul class="tool">
-        <li><a href="/new">new</a></li>
+        <li><a class="btn-new" href="/new">new</a></li>
         <li><a class="btn-build" href="/build">build</a></li>
         <li><a class="btn-deploy" href="/deploy">deploy</a></li>
       </ul>
-			% endif
+      % endif
     </div>
     ${self.content()}
     <div class="footer">

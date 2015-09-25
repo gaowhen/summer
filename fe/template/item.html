@@ -2,26 +2,26 @@
 
 <%def name="item(entry)">
 <div class="entry">
-	<div class="entry-hd">
-		<h2>
-			% if entry['status'] == 'draft':
-				<span>#draft</span>
-			% endif
-			<a href="/posts/${entry['id']}">${entry['title']}</a>
-		</h2>
+  <div class="entry-hd">
+    <h2>
+      % if entry['status'] == 'draft':
+        <span>#draft</span>
+      % endif
+      <a href="/posts/${entry['id']}">${entry['title']}</a>
+    </h2>
 
-		<div class="meta">
-			<span class="time">${entry['date']}</span>
-		</div>
+    <div class="meta">
+      <span class="time">${entry['date']}</span>
+    </div>
 
-		% if g and g.debug:
-		<a href="/posts/${entry['id']}/edit" class="btn-edit">edit</a>
-		<a href="#" data-pid="${entry['id']}" class="btn-del">del</a>
-		% endif
-	</div>
+    % if g and g.debug:
+    <a href="/posts/${entry['id']}/edit" class="btn-edit">edit</a>
+    <a href="#" data-pid="${entry['id']}" class="btn-del">del</a>
+    % endif
+  </div>
 
-	<div class="entry-bd">
-		${entry['content']}
-	</div>
+  <div class="entry-bd">
+    ${entry['content']}
+  </div>
 </div>
 </%def>

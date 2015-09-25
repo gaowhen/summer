@@ -9,3 +9,5 @@ summer/templates/*
 *.db
 fe/static/img/*
 venv/*
+*.swp
+*.swo

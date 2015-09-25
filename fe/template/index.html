@@ -4,18 +4,14 @@
 
 <%def name="content()">
 <div class="content">
-	% for entry in entries:
-		${entry_item.item(entry)}
-	% endfor
+  % for entry in entries:
+    ${entry_item.item(entry)}
+  % endfor
 
-	<%
-		max = total/perpage if (total/perpage) * perpage == total else total/perpage + 1
-	%>
+  <%
+    max = total/perpage if (total/perpage) * perpage == total else total/perpage + 1
+  %>
 
-	${pagination.page(max, page)}
+  ${pagination.page(max, page)}
 </div>
-</%def>
-
-<%def name="js()">
-<script src="{{{js/index.js}}}"></script>
 </%def>

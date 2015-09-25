@@ -16,7 +16,21 @@ There are more generators on [https://www.staticgen.com/](https://www.staticgen.
 
 ### markdown files
 
-put all markdown files into summer/post folder, draft markdown files into summer/_draft folder 
+create summer/post/ summer/_draft/ folder 
+
+and put all markdown files into summer/post/ folder, draft markdown files into summer/_draft/ folder 
+
+### ghapage repo
+
+crete ghpages, ghpages/post/, ghpages/page/, ghpages/static/ folders
+
+git init add remote origin as your own ghpage repo uri
+
+for example:
+
+my own repo uri is `https://github.com/gaowhen/gaowhen.github.io.git`
+
+  git remote add origin https://github.com/gaowhen/gaowhen.github.io.git
 
 ### database
 
@@ -31,6 +45,8 @@ set site name and subtitle in summer/config.py
 and do not forget to replace your own analytics code in fe/js/_ga.js
 
 ### boot
+
+use [honcho](https://github.com/nickstenning/honcho) to control dev enviroment
 
 `honcho start` 
 
