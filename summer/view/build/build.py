@@ -128,11 +128,11 @@ def build_feed():
         feed.add(unicode(_entry['title']),
                  unicode(markdown(_entry['content'])),
                  content_type='html',
-                 author=AUTHOR,
+                 author=current_app.config['AUTHOR'],
                  published=time,
                  updated=time,
-                 id=DOMAIN + _entry['slug'] + '/',
-                 url=DOMAIN + 'posts/' +  _entry['slug'] + '/'
+                 id=current_app.config['DOMAIN'] + _entry['slug'] + '/',
+                 url=current_app.config['DOMAIN'] + 'posts/' +  _entry['slug'] + '/'
                  )
 
     with codecs.open('./ghpages/rss.xml', 'w', 'utf-8-sig') as f:
