@@ -1,7 +1,6 @@
 node_modules/*
 npm-debug.log
 **/*.pyc
-ghpages/*
 summer/post/*
 summer/_draft/*
 summer/static/**/*
