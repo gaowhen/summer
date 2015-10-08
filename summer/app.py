@@ -31,12 +31,10 @@ def create_app(config_name):
         blueprint = import_string(blueprint_qualname)
         app.register_blueprint(blueprint)
 
-
     @app.before_request
     def before_request():
-        #g.debug = True
+        # g.debug = True
         g.debug = app.config['DEBUG']
-
 
     @app.teardown_appcontext
     def teardown_db(exception):

@@ -72,7 +72,8 @@ class Entry(object):
     def get_by_slug(cls, slug):
         db = get_db()
         # params must has comma to be a tupple
-        cur = db.execute('select id, title, content, create_time, status, slug from entries where slug = ?', (slug,))
+        cur = db.execute('select id, title, content, create_time, status, '
+                         'slug from entries where slug = ?', (slug,))
         entry = cur.fetchone()
 
         return entry

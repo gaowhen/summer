@@ -1,5 +1,4 @@
 from contextlib import closing
-from flask import current_app
 
 from summer.app import create_app
 from summer.db.connect import connect_db

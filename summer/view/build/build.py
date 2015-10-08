@@ -4,7 +4,7 @@ import os
 import datetime
 import subprocess
 
-from flask import Blueprint, request, jsonify, current_app
+from flask import Blueprint, jsonify, current_app
 from flask.ext.misaka import markdown
 from werkzeug.contrib.atom import AtomFeed
 
@@ -18,11 +18,17 @@ from summer.model.entry import Entry
 
 bp = Blueprint('build', __name__)
 
+BASE_DIR = './ghpages'
+PAGE_DIR = BASE_DIR + '/page'
+POSTS_DIR = BASE_DIR + '/posts'
+TEMPLATE_DIR = './fe/template'
+STATIC_DIR = BASE_DIR + '/static'
+
 
 def build_index():
-    lookup = TemplateLookup(directories=['./fe/template'])
+    lookup = TemplateLookup(directories=[TEMPLATE_DIR])
     template = Template(
-        filename='./fe/template/index.html', lookup=lookup)
+        filename=TEMPLATE_DIR + '/index.html', lookup=lookup)
 
     page = 1
     perpage = 5
@@ -33,16 +39,16 @@ def build_index():
     html_content = template.render(
         entries=entries, total=total, page=page, perpage=perpage)
 
-    dist = os.path.join('./ghpages/', 'index.html')
+    dist = os.path.join(BASE_DIR, 'index.html')
 
     with codecs.open(dist, 'w', 'utf-8-sig') as f:
         f.write(html_content)
 
 
 def build_pages():
-    lookup = TemplateLookup(directories=['./fe/template'])
+    lookup = TemplateLookup(directories=[TEMPLATE_DIR])
     template = Template(
-        filename='./fe/template/index.html', lookup=lookup)
+        filename=TEMPLATE_DIR + '/index.html', lookup=lookup)
 
     all_entries = Entry.get_all_published(True)
     length = len(all_entries)
@@ -56,7 +62,7 @@ def build_pages():
         html_content = template.render(
             entries=entries, total=length, page=page, perpage=5)
 
-        page_path = os.path.join('./ghpages/page', str(page))
+        page_path = os.path.join(PAGE_DIR, str(page))
 
         try:
             os.mkdir(page_path)
@@ -70,9 +76,9 @@ def build_pages():
 
 
 def build_posts():
-    lookup = TemplateLookup(directories=['./fe/template'])
+    lookup = TemplateLookup(directories=[TEMPLATE_DIR])
     template = Template(
-        filename='./fe/template/entry.html', lookup=lookup)
+        filename=TEMPLATE_DIR + '/entry.html', lookup=lookup)
 
     entries = Entry.get_all_published()
 
@@ -93,9 +99,9 @@ def build_posts():
 
         html_content = template.render(entry=entry)
 
-        os.mkdir(os.path.join('./ghpages/posts', post_slug))
+        os.mkdir(os.path.join(POSTS_DIR, post_slug))
 
-        dist = os.path.join('./ghpages/posts', post_slug + '/index.html')
+        dist = os.path.join(POSTS_DIR, post_slug + '/index.html')
 
         with codecs.open(dist, 'w', 'utf-8-sig') as f:
             f.write(html_content)
@@ -132,20 +138,22 @@ def build_feed():
                  published=time,
                  updated=time,
                  id=current_app.config['DOMAIN'] + _entry['slug'] + '/',
-                 url=current_app.config['DOMAIN'] + 'posts/' +  _entry['slug'] + '/'
+                 url=current_app.config['DOMAIN'] + 'posts/' + _entry['slug'] + '/'
                  )
 
-    with codecs.open('./ghpages/rss.xml', 'w', 'utf-8-sig') as f:
+    with codecs.open(BASE_DIR + '/rss.xml', 'w', 'utf-8-sig') as f:
         f.write(feed.to_string())
 
 
 @bp.route('/build', methods=['POST'])
 def build():
-    shutil.rmtree('./ghpages/page')
-    os.mkdir('./ghpages/page')
+    if os.path.exists(PAGE_DIR):
+        shutil.rmtree(PAGE_DIR)
+    os.mkdir(PAGE_DIR)
 
-    shutil.rmtree('./ghpages/posts')
-    os.mkdir('./ghpages/posts')
+    if os.path.exists(POSTS_DIR):
+        shutil.rmtree(POSTS_DIR)
+    os.mkdir(POSTS_DIR)
 
     # copy source files
     # shutil.copytree('./fe/source', './ghpages/')
@@ -168,7 +176,8 @@ def build():
     # TODO
     # site map
 
-    shutil.rmtree('./ghpages/static')
+    if os.path.exists(STATIC_DIR):
+        shutil.rmtree(STATIC_DIR)
     subprocess.call(['gulp', 'release'])
 
     return jsonify(r=True)

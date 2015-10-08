@@ -30,8 +30,9 @@ def fill_draft():
                            if yaml.load(meta)['tags'] else '')
 
                     with closing(connect_db()) as db:
-                        db.execute('insert into entries (title, slug, content, '
-                                   'create_time, category, tag, status) values '
+                        db.execute('insert into entries (title, slug, '
+                                   'content, create_time, category, tag, '
+                                   'status) values '
                                    '(?, ?, ?, ?, ?, ?, "draft")',
                                    (title, slug, content, create_time,
                                     category, tag))
@@ -63,8 +64,10 @@ def fill_post():
                            if yaml.load(meta)['tags'] else '')
 
                     with closing(connect_db()) as db:
-                        db.execute('insert into entries (title, slug, content, '
-                                   'create_time, category, tag) values '
+                        db.execute('insert into entries '
+                                   '(title, slug, content, '
+                                   'create_time, category, tag) '
+                                   'values '
                                    '(?, ?, ?, ?, ?, ?)',
                                    [title, slug, content, create_time,
                                     category, tag])

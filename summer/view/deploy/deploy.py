@@ -17,21 +17,21 @@ def deploy():
     if (repo.bare):
         repo = Repo.init(repo_path, bare=True)
 
-    #index = repo.index
+    # index = repo.index
 
-    #for diff in index.diff(None):
-    #    if diff.a_blob:
-    #        index.add([diff.a_blob.name])
-    #    elif diff.b_blob:
-    #        index.remove([diff.b_blob.name])
-    ##index.add([diff.a_blob.name for diff in index.diff(None)])
+    # for diff in index.diff(None):
+    #     if diff.a_blob:
+    #         index.add([diff.a_blob.name])
+    #     elif diff.b_blob:
+    #         index.remove([diff.b_blob.name])
+    # #index.add([diff.a_blob.name for diff in index.diff(None)])
 
-    #for untracked in repo.untracked_files:
-    #    print 'untracked'
-    #    print untracked
-    #    index.add([untracked])
+    # for untracked in repo.untracked_files:
+    #     print 'untracked'
+    #     print untracked
+    #     index.add([untracked])
 
-    #index.commit('new commit')
+    # index.commit('new commit')
 
     repo.git.add(all=True)
     repo.git.commit('new commit')

@@ -7,6 +7,7 @@ app = create_app('product')
 
 manager = Manager(app)
 
+
 @manager.command
 def web():
     app.run()
