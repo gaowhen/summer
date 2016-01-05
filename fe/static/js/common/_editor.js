@@ -20,7 +20,7 @@ Editor.prototype = {
       lineWrapping: true
     });
 
-    this.editor.on("change", $.proxy(function () {
+    this.editor.on('change', $.proxy(function () {
       this._updatePreview();
     }, this));
 
@@ -78,9 +78,7 @@ Editor.prototype = {
             })
 
             that.editor.setValue(newMarkdown)
-            setTimeout(function () {
-              $holder.removeClass('dropzone').html('<img src="' + res.path + '"/>')
-            }, 1500)
+            $holder.removeClass('dropzone').html('<img src="' + res.path + '"/>')
           }
         })
     })
