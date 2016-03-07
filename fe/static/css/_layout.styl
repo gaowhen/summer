@@ -1,55 +1,70 @@
 .header,
 .content,
 .footer
-	width:700px
-	margin:0 auto
+  width:700px
+  margin:0 auto
 
-	@media $mobile
-		width: 100%
-		padding:10px
+  @media $mobile
+    width: 100%
+    padding:10px
 
 .header
-	padding:20px 0 0
-	clearfix()
+  padding:20px 0 0
+  clearfix()
 
-	@media $mobile
-		text-align:center
+  @media $mobile
+    text-align:center
 
-	.tool
-		float:right
+  .tool
+    float:right
 
-		li
-			display:inline-block
+    li
+      display:inline-block
 
 .content
 
-	h2
-		@media $mobile
-			text-align:center
-			line-height:1.5
+  h2
+    @media $mobile
+      text-align:center
+      line-height:1.5
 
- 	.entry
-		border-top:1px solid #f1f1f1
+  .entry
+    border-top:1px solid #f1f1f1
 
-		img
-			@media $mobile
-				display:block
-			  margin:0.2em auto
+    img
+      @media $mobile
+        display:block
+        margin:0.2em auto
 
-	.meta
-		@media $mobile
-			text-align:center
+  .meta
+    @media $mobile
+      text-align:center
 
 .footer
-	text-align:center
-	font-size:13px
-	padding:20px 0
-	border-top:1px solid #eee
-	color:#999
+  text-align:center
+  font-size:13px
+  padding:20px 0
+  border-top:1px solid #eee
+  color:#999
 
-	a
-		@media $mobile
-			display:block
+  .copyright
+    a
+      @media $mobile
+        display:block
 
-	span
-		margin:0 5px
+    span
+      margin:0 5px
+
+  .social-media
+    margin-top:30px
+
+    a
+      display:inline-block
+      margin:0 5px
+      color:#999
+      font-size:18px
+
+      &:hover
+        color:#111
+
+
